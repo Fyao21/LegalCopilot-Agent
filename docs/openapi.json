@@ -1,0 +1,705 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "律镜 Legal Copilot Agent API",
+    "version": "0.3.0",
+    "description": "可追溯法律检索与 Agent 案件分析接口。标记为 implemented 的接口已经实现；标记为 planned 的接口是后续规划，当前调用会返回 404。所有输出仅用于技术演示，不构成法律意见。"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "本地 PyCharm 开发环境"
+    }
+  ],
+  "tags": [
+    {"name": "系统", "description": "服务状态接口"},
+    {"name": "法规检索", "description": "法规搜索与详情接口"},
+    {"name": "案件分析（兼容）", "description": "第一周同步案件分析接口"},
+    {"name": "Agent 任务", "description": "第二周后异步 Agent 工作流接口"},
+    {"name": "知识库", "description": "法规录入与导入任务接口"},
+    {"name": "评测", "description": "第四周离线评测接口"}
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["系统"],
+        "summary": "服务健康检查",
+        "description": "检查 API 和数据库是否正常，并返回当前法规数量。",
+        "operationId": "getHealth",
+        "x-implementation-status": "implemented",
+        "responses": {
+          "200": {
+            "description": "服务正常",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/HealthResponse"},
+                "example": {"status": "ok", "article_count": 10}
+              }
+            }
+          },
+          "500": {"$ref": "#/components/responses/InternalServerError"}
+        }
+      }
+    },
+    "/api/v1/articles/search": {
+      "post": {
+        "tags": ["法规检索"],
+        "summary": "搜索相关法规",
+        "description": "根据问题检索 Top-K 法规条文。第一周使用本地哈希向量，后续升级为混合检索。",
+        "operationId": "searchArticles",
+        "x-implementation-status": "implemented",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ArticleSearchRequest"},
+              "examples": {
+                "contract": {
+                  "summary": "合同违约检索",
+                  "value": {"query": "合同没有履行，可以要求赔偿损失吗", "limit": 5}
+                },
+                "labour": {
+                  "summary": "劳动报酬检索",
+                  "value": {"query": "公司拖欠工资并且没有签劳动合同", "limit": 5}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "按相关度排序的法规列表",
+            "content": {
+              "application/json": {
+                "schema": {"type": "array", "items": {"$ref": "#/components/schemas/Citation"}}
+              }
+            }
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"},
+          "500": {"$ref": "#/components/responses/InternalServerError"}
+        }
+      }
+    },
+    "/api/v1/articles/{article_id}": {
+      "get": {
+        "tags": ["法规检索"],
+        "summary": "获取法规条文详情",
+        "description": "根据 article_id 回查知识库原文，用于验证报告引用。",
+        "operationId": "getArticleById",
+        "x-implementation-status": "implemented",
+        "parameters": [
+          {"$ref": "#/components/parameters/ArticleId"}
+        ],
+        "responses": {
+          "200": {
+            "description": "法规详情",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LegalArticleDetail"}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/api/v1/cases": {
+      "post": {
+        "tags": ["案件分析（兼容）"],
+        "summary": "同步分析案件",
+        "description": "第一周兼容接口。上传可选文件并输入问题，同步返回案件要素和法规引用。支持 TXT、DOCX、PDF。",
+        "operationId": "createCaseAnalysis",
+        "x-implementation-status": "implemented",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["question"],
+                "properties": {
+                  "question": {"type": "string", "minLength": 2, "description": "用户希望分析的问题"},
+                  "file": {"type": "string", "format": "binary", "nullable": true, "description": "可选案件文件，支持 .txt/.docx/.pdf"}
+                }
+              },
+              "encoding": {
+                "file": {"contentType": "text/plain, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf"}
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "案件分析完成",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CaseAnalysisResponse"},
+                "example": {
+                  "run_id": 1,
+                  "facts": {
+                    "case_type": "合同纠纷",
+                    "parties": ["某采购公司", "某供应商"],
+                    "key_facts": ["双方签订采购合同", "供应商收款后未交货"],
+                    "claims": ["请求解除合同并赔偿损失"],
+                    "dispute_focuses": ["是否构成违约", "能否解除合同"]
+                  },
+                  "citations": [],
+                  "notice": "本结果仅用于技术演示，不构成法律意见。"
+                }
+              }
+            }
+          },
+          "415": {"$ref": "#/components/responses/UnsupportedMediaType"},
+          "422": {"$ref": "#/components/responses/ValidationError"},
+          "500": {"$ref": "#/components/responses/InternalServerError"}
+        }
+      }
+    },
+    "/api/v1/runs": {
+      "post": {
+        "tags": ["Agent 任务"],
+        "summary": "创建 Agent 分析任务",
+        "description": "创建后台 Agent 工作流并立即返回 run_id。调用方通过状态接口轮询进度，完成后再读取引用和报告。",
+        "operationId": "createAgentRun",
+        "x-implementation-status": "implemented",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["question"],
+                "properties": {
+                  "question": {"type": "string", "minLength": 2, "maxLength": 5000},
+                  "file": {"type": "string", "format": "binary", "nullable": true},
+                  "mode": {"$ref": "#/components/schemas/RunMode"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "任务已进入队列",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RunCreatedResponse"}}}
+          },
+          "415": {"$ref": "#/components/responses/UnsupportedMediaType"},
+          "422": {"$ref": "#/components/responses/ValidationError"},
+          "429": {"$ref": "#/components/responses/TooManyRequests"}
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}": {
+      "get": {
+        "tags": ["Agent 任务"],
+        "summary": "查询任务状态",
+        "description": "查询任务当前节点、进度、案件要素、错误信息和公开的节点执行轨迹。",
+        "operationId": "getAgentRun",
+        "x-implementation-status": "implemented",
+        "parameters": [{"$ref": "#/components/parameters/RunId"}],
+        "responses": {
+          "200": {
+            "description": "任务状态",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RunStatusResponse"}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/retry": {
+      "post": {
+        "tags": ["Agent 任务"],
+        "summary": "重试失败任务",
+        "description": "仅允许重试 failed 状态的任务，并创建新的执行尝试。",
+        "operationId": "retryAgentRun",
+        "x-implementation-status": "implemented",
+        "parameters": [{"$ref": "#/components/parameters/RunId"}],
+        "responses": {
+          "202": {
+            "description": "已接受重试",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RunCreatedResponse"}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"},
+          "409": {"$ref": "#/components/responses/Conflict"}
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/citations": {
+      "get": {
+        "tags": ["Agent 任务"],
+        "summary": "获取任务引用列表",
+        "description": "返回任务的候选引用、关键词/语义/综合分数及审核状态。",
+        "operationId": "getRunCitations",
+        "x-implementation-status": "implemented",
+        "parameters": [{"$ref": "#/components/parameters/RunId"}],
+        "responses": {
+          "200": {
+            "description": "引用列表",
+            "content": {"application/json": {"schema": {"type": "array", "items": {"$ref": "#/components/schemas/ReviewedCitation"}}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/report": {
+      "get": {
+        "tags": ["Agent 任务"],
+        "summary": "获取结构化报告",
+        "description": "任务完成后返回 Markdown 报告、案件要素、审核引用和生成元数据。",
+        "operationId": "getRunReport",
+        "x-implementation-status": "implemented",
+        "parameters": [{"$ref": "#/components/parameters/RunId"}],
+        "responses": {
+          "200": {
+            "description": "完整报告",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReportResponse"}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"},
+          "409": {"$ref": "#/components/responses/Conflict"}
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/export": {
+      "get": {
+        "tags": ["Agent 任务"],
+        "summary": "导出报告文件",
+        "description": "将已完成的分析报告导出为 Markdown 或中文 PDF 文件。",
+        "operationId": "exportRunReport",
+        "x-implementation-status": "implemented",
+        "parameters": [
+          {"$ref": "#/components/parameters/RunId"},
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {"type": "string", "enum": ["markdown", "pdf"], "default": "markdown"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "报告文件",
+            "headers": {
+              "Content-Disposition": {"schema": {"type": "string"}, "description": "下载文件名"}
+            },
+            "content": {
+              "text/markdown": {"schema": {"type": "string", "format": "binary"}},
+              "application/pdf": {"schema": {"type": "string", "format": "binary"}}
+            }
+          },
+          "404": {"$ref": "#/components/responses/NotFound"},
+          "409": {"$ref": "#/components/responses/Conflict"}
+        }
+      }
+    },
+    "/api/v1/knowledge/articles": {
+      "post": {
+        "tags": ["知识库"],
+        "summary": "新增单条法规",
+        "description": "写入一条经过人工核验的法规，并生成向量。规划接口。",
+        "operationId": "createKnowledgeArticle",
+        "x-implementation-status": "planned",
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LegalArticleCreate"}}}
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LegalArticleDetail"}}}
+          },
+          "409": {"$ref": "#/components/responses/Conflict"},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/api/v1/knowledge/imports": {
+      "post": {
+        "tags": ["知识库"],
+        "summary": "批量导入法规",
+        "description": "上传 JSONL、TXT 或 CSV 法规数据，创建后台导入任务。规划接口。",
+        "operationId": "createKnowledgeImport",
+        "x-implementation-status": "planned",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "overwrite": {"type": "boolean", "default": false}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "导入任务已创建",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ImportJobResponse"}}}
+          },
+          "415": {"$ref": "#/components/responses/UnsupportedMediaType"},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/api/v1/knowledge/imports/{job_id}": {
+      "get": {
+        "tags": ["知识库"],
+        "summary": "查询法规导入状态",
+        "description": "查看批量导入的成功、跳过和失败数量。规划接口。",
+        "operationId": "getKnowledgeImport",
+        "x-implementation-status": "planned",
+        "parameters": [{"$ref": "#/components/parameters/JobId"}],
+        "responses": {
+          "200": {
+            "description": "导入任务状态",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ImportJobResponse"}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    },
+    "/api/v1/evaluations": {
+      "post": {
+        "tags": ["评测"],
+        "summary": "创建离线评测任务",
+        "description": "使用指定数据集和检索方案启动评测。规划接口。",
+        "operationId": "createEvaluation",
+        "x-implementation-status": "planned",
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EvaluationCreate"}}}
+        },
+        "responses": {
+          "202": {
+            "description": "评测已创建",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EvaluationStatus"}}}
+          },
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/api/v1/evaluations/{evaluation_id}": {
+      "get": {
+        "tags": ["评测"],
+        "summary": "查询评测状态与结果",
+        "description": "返回评测进度和已完成指标。规划接口。",
+        "operationId": "getEvaluation",
+        "x-implementation-status": "planned",
+        "parameters": [{"$ref": "#/components/parameters/EvaluationId"}],
+        "responses": {
+          "200": {
+            "description": "评测状态",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EvaluationStatus"}}}
+          },
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ArticleId": {
+        "name": "article_id",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "integer", "minimum": 1},
+        "description": "法规条文数据库 ID"
+      },
+      "RunId": {
+        "name": "run_id",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "integer", "minimum": 1},
+        "description": "Agent 任务 ID"
+      },
+      "JobId": {
+        "name": "job_id",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "string", "format": "uuid"}
+      },
+      "EvaluationId": {
+        "name": "evaluation_id",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "string", "format": "uuid"}
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status", "article_count"],
+        "properties": {
+          "status": {"type": "string", "example": "ok"},
+          "article_count": {"type": "integer", "minimum": 0, "example": 10}
+        }
+      },
+      "ArticleSearchRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": {"type": "string", "minLength": 2, "example": "对方不履行合同，能否要求赔偿"},
+          "limit": {"type": "integer", "minimum": 1, "maximum": 20, "default": 5}
+        }
+      },
+      "Citation": {
+        "type": "object",
+        "required": ["article_id", "law_name", "article_number", "excerpt", "source", "score"],
+        "properties": {
+          "article_id": {"type": "integer", "example": 3},
+          "law_name": {"type": "string", "example": "中华人民共和国民法典"},
+          "article_number": {"type": "string", "example": "第五百七十七条"},
+          "excerpt": {"type": "string", "example": "当事人一方不履行合同义务或者履行合同义务不符合约定的……"},
+          "source": {"type": "string", "example": "项目内置教学样例"},
+          "score": {"type": "number", "format": "float", "minimum": -1, "maximum": 1, "example": 0.6325}
+        }
+      },
+      "CaseFacts": {
+        "type": "object",
+        "required": ["case_type", "parties", "key_facts", "claims", "dispute_focuses"],
+        "properties": {
+          "case_type": {"type": "string", "example": "合同纠纷"},
+          "parties": {"type": "array", "items": {"type": "string"}},
+          "key_facts": {"type": "array", "items": {"type": "string"}},
+          "claims": {"type": "array", "items": {"type": "string"}},
+          "dispute_focuses": {"type": "array", "items": {"type": "string"}},
+          "confidence": {"type": "number", "format": "float", "minimum": 0, "maximum": 1, "nullable": true, "description": "第二周增加"},
+          "missing_information": {"type": "array", "items": {"type": "string"}, "description": "第二周增加"},
+          "questions_for_user": {"type": "array", "items": {"type": "string"}, "description": "第二周增加"}
+        }
+      },
+      "CaseAnalysisResponse": {
+        "type": "object",
+        "required": ["run_id", "facts", "citations", "notice"],
+        "properties": {
+          "run_id": {"type": "integer", "minimum": 1},
+          "facts": {"$ref": "#/components/schemas/CaseFacts"},
+          "citations": {"type": "array", "items": {"$ref": "#/components/schemas/Citation"}},
+          "notice": {"type": "string", "example": "本结果仅用于技术演示，不构成法律意见。"}
+        }
+      },
+      "LegalArticleDetail": {
+        "type": "object",
+        "required": ["article_id", "law_name", "article_number", "content", "source"],
+        "properties": {
+          "article_id": {"type": "integer"},
+          "law_name": {"type": "string"},
+          "article_number": {"type": "string"},
+          "content": {"type": "string", "description": "数据库保存的完整条文内容"},
+          "source": {"type": "string"}
+        }
+      },
+      "LegalArticleCreate": {
+        "type": "object",
+        "required": ["law_name", "article_number", "content", "source"],
+        "properties": {
+          "law_name": {"type": "string", "minLength": 2, "maxLength": 200},
+          "article_number": {"type": "string", "minLength": 1, "maxLength": 64},
+          "content": {"type": "string", "minLength": 2},
+          "source": {"type": "string", "minLength": 2, "maxLength": 500},
+          "source_url": {"type": "string", "format": "uri", "nullable": true},
+          "effective_date": {"type": "string", "format": "date", "nullable": true},
+          "version": {"type": "string", "nullable": true}
+        }
+      },
+      "RunMode": {
+        "type": "string",
+        "enum": ["offline", "agent"],
+        "default": "offline",
+        "description": "offline 使用规则和本地检索；agent 使用 LLM 与完整工作流"
+      },
+      "RunState": {
+        "type": "string",
+        "enum": ["queued", "parsing", "analyzing", "retrieving", "reviewing", "writing", "completed", "failed"]
+      },
+      "RunCreatedResponse": {
+        "type": "object",
+        "required": ["run_id", "status", "status_url", "report_url"],
+        "properties": {
+          "run_id": {"type": "integer", "minimum": 1, "example": 12},
+          "status": {"$ref": "#/components/schemas/RunState"},
+          "status_url": {"type": "string", "example": "/api/v1/runs/12"},
+          "report_url": {"type": "string", "example": "/api/v1/runs/12/report"}
+        }
+      },
+      "NodeTrace": {
+        "type": "object",
+        "required": ["node", "status", "duration_ms", "action_summary"],
+        "properties": {
+          "node": {"type": "string", "example": "retrieve_laws"},
+          "status": {"type": "string", "enum": ["pending", "running", "completed", "failed"]},
+          "duration_ms": {"type": "integer", "minimum": 0},
+          "action_summary": {"type": "string", "description": "公开动作摘要，不包含模型隐藏思维链"},
+          "error_code": {"type": "string", "nullable": true}
+        }
+      },
+      "RunStatusResponse": {
+        "type": "object",
+        "required": ["run_id", "status", "progress", "mode", "traces"],
+        "properties": {
+          "run_id": {"type": "integer"},
+          "status": {"$ref": "#/components/schemas/RunState"},
+          "current_node": {"type": "string", "nullable": true},
+          "progress": {"type": "integer", "minimum": 0, "maximum": 100},
+          "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
+          "mode": {"$ref": "#/components/schemas/RunMode"},
+          "facts": {"$ref": "#/components/schemas/CaseFacts"},
+          "traces": {"type": "array", "items": {"$ref": "#/components/schemas/NodeTrace"}},
+          "error_code": {"type": "string", "nullable": true},
+          "error_message": {"type": "string", "nullable": true},
+          "created_at": {"type": "string", "format": "date-time"},
+          "started_at": {"type": "string", "format": "date-time", "nullable": true},
+          "completed_at": {"type": "string", "format": "date-time", "nullable": true}
+        }
+      },
+      "CitationReviewStatus": {
+        "type": "string",
+        "enum": ["pending", "verified", "rejected", "low_confidence"]
+      },
+      "ReviewedCitation": {
+        "allOf": [
+          {"$ref": "#/components/schemas/Citation"},
+          {
+            "type": "object",
+            "required": ["review_status"],
+            "properties": {
+              "review_status": {"$ref": "#/components/schemas/CitationReviewStatus"},
+              "review_reason": {"type": "string", "nullable": true},
+              "keyword_score": {"type": "number", "format": "float", "nullable": true},
+              "semantic_score": {"type": "number", "format": "float", "nullable": true}
+              ,"verified": {"type": "boolean", "default": false}
+            }
+          }
+        ]
+      },
+      "ReportResponse": {
+        "type": "object",
+        "required": ["run_id", "title", "markdown", "citations", "notice"],
+        "properties": {
+          "run_id": {"type": "integer"},
+          "title": {"type": "string", "example": "采购合同违约法律分析报告"},
+          "markdown": {"type": "string"},
+          "facts": {"$ref": "#/components/schemas/CaseFacts"},
+          "evidence_gaps": {"type": "array", "items": {"type": "string"}},
+          "citations": {"type": "array", "items": {"$ref": "#/components/schemas/ReviewedCitation"}},
+          "notice": {"type": "string", "example": "本结果仅用于技术演示，不构成法律意见。"},
+          "model": {"type": "string", "nullable": true}
+        }
+      },
+      "ReportSection": {
+        "type": "object",
+        "required": ["heading", "content", "citation_ids"],
+        "properties": {
+          "heading": {"type": "string"},
+          "content": {"type": "string"},
+          "citation_ids": {"type": "array", "items": {"type": "integer"}}
+        }
+      },
+      "ImportJobResponse": {
+        "type": "object",
+        "required": ["job_id", "status", "total", "success", "skipped", "failed"],
+        "properties": {
+          "job_id": {"type": "string", "format": "uuid"},
+          "status": {"type": "string", "enum": ["queued", "running", "completed", "failed"]},
+          "total": {"type": "integer", "minimum": 0},
+          "success": {"type": "integer", "minimum": 0},
+          "skipped": {"type": "integer", "minimum": 0},
+          "failed": {"type": "integer", "minimum": 0},
+          "errors": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "EvaluationCreate": {
+        "type": "object",
+        "required": ["dataset", "strategies"],
+        "properties": {
+          "dataset": {"type": "string", "example": "eval/dataset.jsonl"},
+          "strategies": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "enum": ["keyword", "hash", "hybrid"]}
+          },
+          "top_k": {"type": "integer", "minimum": 1, "maximum": 20, "default": 5}
+        }
+      },
+      "EvaluationMetrics": {
+        "type": "object",
+        "properties": {
+          "case_type_accuracy": {"type": "number", "format": "float", "minimum": 0, "maximum": 1},
+          "recall_at_5": {"type": "number", "format": "float", "minimum": 0, "maximum": 1},
+          "mrr": {"type": "number", "format": "float", "minimum": 0, "maximum": 1},
+          "citation_accuracy": {"type": "number", "format": "float", "minimum": 0, "maximum": 1},
+          "workflow_success_rate": {"type": "number", "format": "float", "minimum": 0, "maximum": 1},
+          "average_latency_ms": {"type": "number", "minimum": 0},
+          "p95_latency_ms": {"type": "number", "minimum": 0}
+        }
+      },
+      "EvaluationStatus": {
+        "type": "object",
+        "required": ["evaluation_id", "status", "progress"],
+        "properties": {
+          "evaluation_id": {"type": "string", "format": "uuid"},
+          "status": {"type": "string", "enum": ["queued", "running", "completed", "failed"]},
+          "progress": {"type": "integer", "minimum": 0, "maximum": 100},
+          "results": {
+            "type": "object",
+            "additionalProperties": {"$ref": "#/components/schemas/EvaluationMetrics"},
+            "nullable": true
+          },
+          "error": {"$ref": "#/components/schemas/ErrorResponse"}
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": {"type": "string", "example": "RUN_NOT_FOUND"},
+          "message": {"type": "string", "example": "未找到指定任务"},
+          "detail": {"type": "string", "nullable": true},
+          "request_id": {"type": "string", "nullable": true}
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "required": ["detail"],
+        "properties": {
+          "detail": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "loc": {"type": "array", "items": {}},
+                "msg": {"type": "string"},
+                "type": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "请求参数校验失败",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ValidationErrorResponse"}}}
+      },
+      "UnsupportedMediaType": {
+        "description": "文件格式不支持",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}, "example": {"code": "UNSUPPORTED_FILE_TYPE", "message": "仅支持 .txt、.docx、.pdf 文件"}}}
+      },
+      "NotFound": {
+        "description": "资源不存在",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}
+      },
+      "Conflict": {
+        "description": "资源状态冲突",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}
+      },
+      "TooManyRequests": {
+        "description": "请求过于频繁",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}
+      },
+      "InternalServerError": {
+        "description": "服务器内部错误",
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}
+      }
+    }
+  }
+}
