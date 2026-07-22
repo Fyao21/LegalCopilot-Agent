@@ -1432,3 +1432,13 @@ dataset.jsonl
 ## 10. 简历描述
 
 可以使用 `docs/JOB_MATERIALS.md` 中的量化描述，但必须保留“24 条脱敏教学样例”范围。在线 Embedding、Docker 和演示视频在实际验收前不能写成已完成。
+
+---
+
+# 2026-07-23：GitHub Actions 首次云端验收
+
+第四周提交 `d8d6ab8` 推送到 GitHub 后触发 `CI` 工作流，运行 ID 为 `29946002021`。`backend` Job 完成依赖安装、Ruff 格式检查、Ruff 静态检查、mypy、32 项后端测试和离线评测；`frontend` Job完成 pnpm 锁文件安装、TypeScript 检查和 Vite 构建。两个 Job 均返回 `success`。
+
+这次验收证明项目不依赖开发机的 `.venv`、SQLite 运行库、Node modules 或真实模型 Key。CI 环境显式使用离线模式，因此不会产生 DeepSeek 或 Embedding 费用。后续每次推送 `main` 或创建 Pull Request 都会重新执行相同门禁。
+
+面试追问：“本地测试通过为什么还需要 CI？”回答要点：本地可能隐式依赖缓存、环境变量或已安装软件；CI 在全新环境按仓库声明重建依赖，能够发现缺失文件、锁文件不一致、平台差异和测试偷偷读取本机密钥等问题。
