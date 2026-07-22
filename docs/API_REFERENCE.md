@@ -30,7 +30,7 @@ OpenAPI 中通过 `x-implementation-status` 标记实现状态：
 | POST | `/api/v1/cases` | 同步案件分析 |
 | GET | `/api/v1/articles/{article_id}` | 回查法规完整原文 |
 | POST | `/api/v1/runs` | 执行完整 Agent 工作流 |
-| GET | `/api/v1/runs/{run_id}` | 查询状态和节点轨迹 |
+| GET | `/api/v1/runs/{run_id}` | 查询状态、实际执行引擎、模型和节点轨迹 |
 | POST | `/api/v1/runs/{run_id}/retry` | 重试失败任务 |
 | GET | `/api/v1/runs/{run_id}/citations` | 查看审核引用 |
 | GET | `/api/v1/runs/{run_id}/report` | 获取 Markdown 报告 |
@@ -53,6 +53,8 @@ OpenAPI 中通过 `x-implementation-status` 标记实现状态：
 | GET | `/api/v1/knowledge/imports/{job_id}` | 第二周 | 查询导入状态 |
 
 ### 评测
+
+第四周已实现本地/CI 评测命令 `python eval/run_eval.py`。评测不是在线业务接口，不会让任意访问者触发高成本批处理。以下接口仍属于未来管理端规划：
 
 | 方法 | 路径 | 计划阶段 | 说明 |
 |---|---|---|---|

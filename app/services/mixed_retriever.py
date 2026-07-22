@@ -75,4 +75,3 @@ def retrieve_articles_mixed(
         for article, combined, keyword, semantic in scored[:limit]
     ]
     return RetrievalResult(citations=citations, provider=provider.provider_name, model=provider.model_name)
-

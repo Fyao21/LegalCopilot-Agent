@@ -131,6 +131,8 @@ function App() {
         progress: 0,
         retry_count: 0,
         mode,
+        execution_engine: "pending",
+        model: null,
         facts: null,
         traces: [],
         error_code: null,
@@ -257,6 +259,15 @@ function App() {
               <>
                 <div className="progress-summary">
                   <div><strong>{stageLabels[status.status] || status.status}</strong><span>{status.progress}%</span></div>
+                  <div className={`engine-badge engine-${status.execution_engine}`}>
+                    {status.execution_engine === "llm"
+                      ? `智能 Agent · ${status.model || "LLM"}`
+                      : status.execution_engine === "fallback"
+                        ? "Agent 已降级 · 离线规则"
+                        : status.execution_engine === "rules"
+                          ? "离线规则引擎 · 未调用模型"
+                          : status.mode === "agent" ? "正在连接智能 Agent" : "正在执行离线规则"}
+                  </div>
                   <div className="progress-track"><i style={{ width: `${status.progress}%` }} /></div>
                 </div>
                 <ol className="timeline">

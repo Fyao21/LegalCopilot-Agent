@@ -80,6 +80,8 @@ class AgentRunStatus(BaseModel):
     progress: int = Field(ge=0, le=100)
     retry_count: int = 0
     mode: str
+    execution_engine: str
+    model: str | None = None
     facts: CaseFacts | None = None
     traces: list[NodeTrace] = Field(default_factory=list)
     error_code: str | None = None

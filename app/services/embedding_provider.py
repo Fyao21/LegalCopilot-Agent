@@ -73,4 +73,3 @@ def get_embedding_provider(force_offline: bool = False) -> EmbeddingProvider:
         model_name=settings.embedding_model,
         timeout_seconds=settings.llm_timeout_seconds,
     )
-

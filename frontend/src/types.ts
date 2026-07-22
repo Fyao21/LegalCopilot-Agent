@@ -41,6 +41,8 @@ export interface RunStatus {
   progress: number;
   retry_count: number;
   mode: "offline" | "agent";
+  execution_engine: "pending" | "rules" | "llm" | "fallback";
+  model: string | null;
   facts: CaseFacts | null;
   traces: NodeTrace[];
   error_code: string | null;

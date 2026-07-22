@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -94,7 +94,11 @@ def _build_graph(db: Session, mode: str):
         result = retrieve_articles_mixed(db, query, provider, get_settings().top_k)
         traces = [
             *state.get("traces", []),
-            _trace("retrieve_laws", started, f"混合检索完成，provider={result.provider}，候选={len(result.citations)}"),
+            _trace(
+                "retrieve_laws",
+                started,
+                f"混合检索完成，provider={result.provider}，候选={len(result.citations)}",
+            ),
         ]
         publish(state["run_id"], status="retrieving", node="retrieve_laws", progress=55, traces=traces)
         return {
@@ -122,7 +126,10 @@ def _build_graph(db: Session, mode: str):
         publish(state["run_id"], status="retrieving", node="retry_retrieval", progress=50)
         started = time.perf_counter()
         retry_count = state.get("retry_count", 0) + 1
-        traces = [*state.get("traces", []), _trace("retry_retrieval", started, f"准备第 {retry_count} 次补充检索")]
+        traces = [
+            *state.get("traces", []),
+            _trace("retry_retrieval", started, f"准备第 {retry_count} 次补充检索"),
+        ]
         publish(state["run_id"], status="retrieving", node="retry_retrieval", progress=50, traces=traces)
         return {
             "retry_count": retry_count,
@@ -177,7 +184,7 @@ def execute_agent_run(db: Session, run: AgentRun) -> AgentRun:
     run.status = "analyzing"
     run.current_node = "analyze_case"
     run.progress = 10
-    run.started_at = datetime.now(timezone.utc)
+    run.started_at = datetime.now(UTC)
     run.completed_at = None
     run.error_code = None
     run.error_message = None
@@ -202,7 +209,7 @@ def execute_agent_run(db: Session, run: AgentRun) -> AgentRun:
         run.evidence_gaps = result.get("evidence_gaps", [])
         run.node_traces = [trace.model_dump() for trace in result.get("traces", [])]
         run.model_name = result.get("model_name")
-        run.completed_at = datetime.now(timezone.utc)
+        run.completed_at = datetime.now(UTC)
         for citation in result.get("reviewed_citations", []):
             db.add(
                 AgentRunCitation(
@@ -221,7 +228,7 @@ def execute_agent_run(db: Session, run: AgentRun) -> AgentRun:
         run.current_node = "failed"
         run.error_code = type(error).__name__.upper()
         run.error_message = str(error)[:1000]
-        run.completed_at = datetime.now(timezone.utc)
+        run.completed_at = datetime.now(UTC)
     db.commit()
     db.refresh(run)
     return run

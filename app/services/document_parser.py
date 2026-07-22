@@ -20,4 +20,3 @@ def extract_text(filename: str, content: bytes) -> str:
 
         return "\n".join((page.extract_text() or "") for page in PdfReader(BytesIO(content)).pages).strip()
     raise UnsupportedDocumentError("仅支持 .txt、.docx、.pdf 文件")
-

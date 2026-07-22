@@ -5,7 +5,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(PROJECT_ROOT / ".env")
 
@@ -62,7 +61,9 @@ def get_settings() -> Settings:
         sample_laws_file=PROJECT_ROOT / "data" / "sample_laws.jsonl",
         offline_mode=offline_mode,
         llm_api_key=llm_api_key,
-        llm_base_url=(os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL") or "https://api.deepseek.com").rstrip("/"),
+        llm_base_url=(
+            os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL") or "https://api.deepseek.com"
+        ).rstrip("/"),
         llm_model=os.getenv("LLM_MODEL") or os.getenv("MODEL_NAME") or "deepseek-v4-flash",
         llm_timeout_seconds=float(os.getenv("LLM_TIMEOUT_SECONDS", "60")),
         embedding_provider=os.getenv("EMBEDDING_PROVIDER", "hash").strip().lower(),

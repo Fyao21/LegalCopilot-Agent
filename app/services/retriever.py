@@ -25,4 +25,3 @@ def retrieve_articles(db: Session, query: str, limit: int = 5) -> list[Citation]
         )
         for article, score in ranked
     ]
-

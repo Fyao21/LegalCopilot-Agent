@@ -3,8 +3,8 @@ import json
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import LegalArticle
 from app.llm import LLMClientError, OpenAICompatibleLLM
+from app.models import LegalArticle
 from app.schemas import Citation, CitationReviewBatch, ReviewedCitation
 from app.services.embeddings import tokenize
 
@@ -16,7 +16,9 @@ def review_citations(
     llm: OpenAICompatibleLLM | None = None,
 ) -> list[ReviewedCitation]:
     article_ids = [citation.article_id for citation in citations]
-    rows = db.scalars(select(LegalArticle).where(LegalArticle.id.in_(article_ids))).all() if article_ids else []
+    rows = (
+        db.scalars(select(LegalArticle).where(LegalArticle.id.in_(article_ids))).all() if article_ids else []
+    )
     articles = {article.id: article for article in rows}
     query_tokens = set(tokenize(query))
     reviewed: list[ReviewedCitation] = []
@@ -28,7 +30,9 @@ def review_citations(
             and article.article_number == citation.article_number
             and article.content == citation.excerpt
         )
-        support_overlap = len(query_tokens & set(tokenize(article.content))) if article and query_tokens else 0
+        support_overlap = (
+            len(query_tokens & set(tokenize(article.content))) if article and query_tokens else 0
+        )
         verified = exact and (citation.score >= 0.03 or support_overlap > 0)
         if not exact:
             status, reason = "rejected", "引用字段与知识库原文不一致"
@@ -55,12 +59,19 @@ def review_citations(
     payload = {
         "query": query,
         "citations": [
-            {"article_id": item.article_id, "law_name": item.law_name, "article_number": item.article_number, "content": item.excerpt}
+            {
+                "article_id": item.article_id,
+                "law_name": item.law_name,
+                "article_number": item.article_number,
+                "content": item.excerpt,
+            }
             for item in deterministic_verified
         ],
     }
     try:
-        decision = llm.invoke_structured(system_prompt, json.dumps(payload, ensure_ascii=False), CitationReviewBatch)
+        decision = llm.invoke_structured(
+            system_prompt, json.dumps(payload, ensure_ascii=False), CitationReviewBatch
+        )
     except LLMClientError:
         return reviewed
     allowed_ids = {item.article_id for item in deterministic_verified}
@@ -70,9 +81,15 @@ def review_citations(
         semantic = decisions.get(citation.article_id)
         if citation.verified and semantic is not None and not semantic.supported:
             citation = citation.model_copy(
-                update={"verified": False, "review_status": "low_confidence", "review_reason": f"语义审核未通过：{semantic.reason}"}
+                update={
+                    "verified": False,
+                    "review_status": "low_confidence",
+                    "review_reason": f"语义审核未通过：{semantic.reason}",
+                }
             )
         elif citation.verified and semantic is not None:
-            citation = citation.model_copy(update={"review_reason": f"确定性校验通过；语义审核通过：{semantic.reason}"})
+            citation = citation.model_copy(
+                update={"review_reason": f"确定性校验通过；语义审核通过：{semantic.reason}"}
+            )
         output.append(citation)
     return output

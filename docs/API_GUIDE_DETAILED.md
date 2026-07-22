@@ -394,6 +394,8 @@ GET {{baseUrl}}/api/v1/runs/31
   "progress": 100,
   "retry_count": 0,
   "mode": "offline",
+  "execution_engine": "rules",
+  "model": "offline-template",
   "facts": {
     "case_type": "合同纠纷",
     "parties": ["供应商", "采购方"],
@@ -440,6 +442,16 @@ GET {{baseUrl}}/api/v1/runs/31
 ```
 
 常见状态：`queued`、`parsing`、`analyzing`、`retrieving`、`reviewing`、`writing`、`completed`、`failed`。
+
+执行来源字段：
+
+- `execution_engine=pending`：任务尚未完成，暂时不能判断最终引擎；
+- `execution_engine=rules`：离线规则和模板完成，未调用模型；
+- `execution_engine=llm`：至少成功使用了 `model` 指定的模型；
+- `execution_engine=fallback`：用户选择 Agent，但模型不可用或配置关闭，最终由离线方案完成；
+- `model`：实际记录的模型名；离线完成通常为 `offline-template`。
+
+判断是否真的使用 Agent 应读取 `execution_engine` 和 `model`，不能根据检索相似度判断。相同问题使用相同法规库时，两种模式可能得到相同检索分数。
 
 `traces` 是公开的可观测轨迹：
 

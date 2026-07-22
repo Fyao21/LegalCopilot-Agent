@@ -1,13 +1,12 @@
 import json
 import re
 import time
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import httpx
 from pydantic import BaseModel, ValidationError
 
 from app.config import get_settings
-
 
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
 
@@ -29,14 +28,15 @@ class OpenAICompatibleLLM:
         self.timeout_seconds = timeout_seconds
 
     def invoke_structured(self, system_prompt: str, user_prompt: str, schema: type[SchemaT]) -> SchemaT:
-        payload = {
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        payload: dict[str, Any] = {
             "model": self.model,
             "temperature": 0.1,
             "response_format": {"type": "json_object"},
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
+            "messages": messages,
         }
         last_error: LLMClientError | None = None
         for attempt in range(2):
@@ -52,7 +52,9 @@ class OpenAICompatibleLLM:
                 if response.status_code == 429:
                     raise LLMClientError("LLM_RATE_LIMITED", "模型服务请求过于频繁", retryable=True)
                 if response.status_code >= 500:
-                    raise LLMClientError("LLM_PROVIDER_ERROR", f"模型服务错误：HTTP {response.status_code}", retryable=True)
+                    raise LLMClientError(
+                        "LLM_PROVIDER_ERROR", f"模型服务错误：HTTP {response.status_code}", retryable=True
+                    )
                 response.raise_for_status()
                 content = response.json()["choices"][0]["message"]["content"]
                 data = json.loads(_extract_json(content))
@@ -62,7 +64,7 @@ class OpenAICompatibleLLM:
             except (KeyError, json.JSONDecodeError, ValidationError) as error:
                 last_error = LLMClientError("LLM_INVALID_OUTPUT", f"模型结构化输出校验失败：{error}")
                 if attempt == 0:
-                    payload["messages"].append(
+                    messages.append(
                         {
                             "role": "user",
                             "content": "上一次输出无法通过 JSON Schema 校验。请重新返回完整、合法的 JSON 对象，不要解释。",
@@ -71,7 +73,9 @@ class OpenAICompatibleLLM:
                     continue
                 raise last_error from error
             except httpx.HTTPStatusError as error:
-                raise LLMClientError("LLM_HTTP_ERROR", f"模型请求失败：{error.response.status_code}") from error
+                raise LLMClientError(
+                    "LLM_HTTP_ERROR", f"模型请求失败：{error.response.status_code}"
+                ) from error
             except LLMClientError as error:
                 last_error = error
                 if not error.retryable:
@@ -88,7 +92,7 @@ def _extract_json(content: str) -> str:
     if fenced:
         return fenced.group(1)
     start, end = text.find("{"), text.rfind("}")
-    return text[start:end + 1] if start >= 0 and end > start else text
+    return text[start : end + 1] if start >= 0 and end > start else text
 
 
 def get_llm_client() -> OpenAICompatibleLLM | None:

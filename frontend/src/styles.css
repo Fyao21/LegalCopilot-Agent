@@ -105,6 +105,10 @@ textarea::placeholder { color: #9ba3a1; }
 .progress-summary { margin-bottom: 26px; }
 .progress-summary > div:first-child { display: flex; justify-content: space-between; color: var(--ink-soft); font-size: 12px; }
 .progress-summary span { color: var(--teal); }
+.engine-badge { width: fit-content; margin-top: 9px; padding: 4px 8px; border: 1px solid #c9d8d3; border-radius: 14px; background: #eef6f3; color: #205f57; font-size: 9px; letter-spacing: .04em; }
+.engine-fallback { border-color: #d7c6a1; background: #f7f1e4; color: #684b18; }
+.engine-rules { border-color: #d3d8d6; background: #f2f4f3; color: #53615f; }
+.engine-pending { color: #667572; }
 .progress-track { height: 4px; margin-top: 10px; overflow: hidden; background: #e1e5e1; border-radius: 4px; }
 .progress-track i { display: block; height: 100%; background: linear-gradient(90deg, var(--teal), #68a995); transition: width .5s ease; }
 .timeline { list-style: none; margin: 0; padding: 0; }

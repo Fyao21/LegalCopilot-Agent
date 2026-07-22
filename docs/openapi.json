@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "律镜 Legal Copilot Agent API",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "可追溯法律检索与 Agent 案件分析接口。标记为 implemented 的接口已经实现；标记为 planned 的接口是后续规划，当前调用会返回 404。所有输出仅用于技术演示，不构成法律意见。"
   },
   "servers": [
@@ -535,7 +535,7 @@
       },
       "RunStatusResponse": {
         "type": "object",
-        "required": ["run_id", "status", "progress", "mode", "traces"],
+        "required": ["run_id", "status", "progress", "mode", "execution_engine", "traces"],
         "properties": {
           "run_id": {"type": "integer"},
           "status": {"$ref": "#/components/schemas/RunState"},
@@ -543,6 +543,12 @@
           "progress": {"type": "integer", "minimum": 0, "maximum": 100},
           "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
           "mode": {"$ref": "#/components/schemas/RunMode"},
+          "execution_engine": {
+            "type": "string",
+            "enum": ["pending", "rules", "llm", "fallback"],
+            "description": "本次任务实际使用的执行引擎；不能通过检索相似度推断是否调用模型"
+          },
+          "model": {"type": "string", "nullable": true, "description": "实际模型名或 offline-template"},
           "facts": {"$ref": "#/components/schemas/CaseFacts"},
           "traces": {"type": "array", "items": {"$ref": "#/components/schemas/NodeTrace"}},
           "error_code": {"type": "string", "nullable": true},

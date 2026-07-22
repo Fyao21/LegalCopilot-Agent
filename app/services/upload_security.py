@@ -8,7 +8,6 @@ from fastapi import UploadFile
 
 from app.services.document_parser import UnsupportedDocumentError, extract_text
 
-
 ALLOWED_CONTENT_TYPES = {
     ".txt": {"text/plain", "application/octet-stream"},
     ".docx": {

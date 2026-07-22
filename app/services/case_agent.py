@@ -30,4 +30,3 @@ def analyze_case_agent(text: str, question: str, llm: OpenAICompatibleLLM | None
         return CaseAnalysisOutcome(facts, "llm")
     except LLMClientError as error:
         return CaseAnalysisOutcome(analyze_case(text, question), "rules_fallback", f"{error.code}: {error}")
-

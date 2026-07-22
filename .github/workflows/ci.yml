@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      OFFLINE_MODE: "true"
+      EMBEDDING_PROVIDER: "hash"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Ruff format check
+        run: ruff format --check app eval scripts tests
+      - name: Ruff lint
+        run: ruff check app eval scripts tests
+      - name: Mypy core check
+        run: mypy app/services app/llm eval
+      - name: Backend tests
+        run: python scripts/run_self_test.py
+      - name: Reproducible offline evaluation
+        run: python eval/run_eval.py --output eval/results/ci.json
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: TypeScript and production build
+        working-directory: frontend
+        run: pnpm run build

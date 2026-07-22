@@ -1,21 +1,21 @@
-import unittest
 import os
+import unittest
 from unittest.mock import patch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from app.database import Base
 from app.config import get_settings
+from app.database import Base
 from app.llm import LLMClientError, OpenAICompatibleLLM
 from app.models import AgentRun, LegalArticle
 from app.schemas import CaseFacts, Citation
+from app.services.case_agent import analyze_case_agent
 from app.services.citation_reviewer import review_citations
 from app.services.embedding_provider import HashEmbeddingProvider
+from app.services.legal_chunker import split_legal_article
 from app.services.mixed_retriever import retrieve_articles_mixed
 from app.services.seed import seed_sample_laws
-from app.services.case_agent import analyze_case_agent
-from app.services.legal_chunker import split_legal_article
 from app.workflows import execute_agent_run
 
 

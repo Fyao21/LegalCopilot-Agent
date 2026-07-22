@@ -32,7 +32,9 @@ def split_legal_article(
         hard_end = min(len(normalized), start + max_chars)
         end = hard_end
         if hard_end < len(normalized):
-            candidates = [normalized.rfind(mark, start + max_chars // 2, hard_end) for mark in ("\n", "。", "；")]
+            candidates = [
+                normalized.rfind(mark, start + max_chars // 2, hard_end) for mark in ("\n", "。", "；")
+            ]
             boundary = max(candidates)
             if boundary > start:
                 end = boundary + 1

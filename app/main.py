@@ -1,7 +1,7 @@
-from contextlib import asynccontextmanager
 import json
 import logging
 import time
+from contextlib import asynccontextmanager
 from uuid import uuid4
 
 import uvicorn
@@ -35,7 +35,6 @@ from app.services.seed import seed_sample_laws
 from app.services.upload_security import UploadValidationError, read_and_extract_upload
 from app.tasks import execute_agent_run_by_id
 
-
 logger = logging.getLogger("legal_copilot.api")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
@@ -54,7 +53,7 @@ settings = get_settings()
 app = FastAPI(
     title=settings.app_name,
     description="可追溯法律检索与案件要素分析 MVP",
-    version="0.3.0",
+    version="0.4.0",
     lifespan=lifespan,
 )
 app.add_middleware(
@@ -76,7 +75,12 @@ async def request_logging(request: Request, call_next):
     except Exception:
         logger.exception(
             json.dumps(
-                {"event": "request_failed", "request_id": request_id, "method": request.method, "path": request.url.path},
+                {
+                    "event": "request_failed",
+                    "request_id": request_id,
+                    "method": request.method,
+                    "path": request.url.path,
+                },
                 ensure_ascii=False,
             )
         )
@@ -107,7 +111,9 @@ def health(db: Session = Depends(get_db)) -> HealthResponse:
 
 @app.post("/api/v1/articles/search", response_model=list[Citation])
 def search_articles(request: SearchRequest, db: Session = Depends(get_db)) -> list[Citation]:
-    return retrieve_articles_mixed(db, request.query, get_embedding_provider(force_offline=True), request.limit).citations
+    return retrieve_articles_mixed(
+        db, request.query, get_embedding_provider(force_offline=True), request.limit
+    ).citations
 
 
 @app.get("/api/v1/articles/{article_id}", response_model=LegalArticleDetail)
@@ -151,7 +157,9 @@ async def create_case(
     db.add(run)
     db.flush()
     query = "\n".join([question, *facts.dispute_focuses, *facts.claims])
-    citations = retrieve_articles_mixed(db, query, get_embedding_provider(force_offline=True), settings.top_k).citations
+    citations = retrieve_articles_mixed(
+        db, query, get_embedding_provider(force_offline=True), settings.top_k
+    ).citations
     db.add_all(
         RetrievalLog(case_run_id=run.id, article_id=citation.article_id, score=citation.score)
         for citation in citations
@@ -226,6 +234,14 @@ async def create_agent_run(
 @app.get("/api/v1/runs/{run_id}", response_model=AgentRunStatus)
 def get_agent_run(run_id: int, db: Session = Depends(get_db)) -> AgentRunStatus:
     run = _get_agent_run_or_404(db, run_id)
+    if run.status != "completed":
+        execution_engine = "pending"
+    elif run.model_name and run.model_name != "offline-template":
+        execution_engine = "llm"
+    elif run.mode == "agent":
+        execution_engine = "fallback"
+    else:
+        execution_engine = "rules"
     return AgentRunStatus(
         run_id=run.id,
         status=run.status,
@@ -233,6 +249,8 @@ def get_agent_run(run_id: int, db: Session = Depends(get_db)) -> AgentRunStatus:
         progress=run.progress,
         retry_count=run.retry_count,
         mode=run.mode,
+        execution_engine=execution_engine,
+        model=run.model_name,
         facts=run.facts,
         traces=run.node_traces or [],
         error_code=run.error_code,
@@ -244,7 +262,9 @@ def get_agent_run(run_id: int, db: Session = Depends(get_db)) -> AgentRunStatus:
 
 
 @app.post("/api/v1/runs/{run_id}/retry", response_model=AgentRunCreated, status_code=202)
-def retry_agent_run(run_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> AgentRunCreated:
+def retry_agent_run(
+    run_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+) -> AgentRunCreated:
     previous = _get_agent_run_or_404(db, run_id)
     if previous.status != "failed":
         raise HTTPException(status_code=409, detail="只有失败任务可以重试")

@@ -1,97 +1,207 @@
 # 律镜 Legal Copilot Agent
 
-这是一个可独立运行的求职项目：输入案件材料与问题，通过 LangGraph 完成案件要素提取、混合检索、引用审核和 Markdown 法律分析报告生成。
+[![CI](https://github.com/Fyao21/LegalCopilot-Agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Fyao21/LegalCopilot-Agent/actions/workflows/ci.yml)
 
-项目默认使用 SQLite 和离线模式，首次启动自动创建 `data/legal_copilot.db` 并导入 `data/sample_laws.jsonl`，不依赖其他仓库、MySQL、Docker 或大模型密钥。配置 OpenAI 兼容接口后可切换到 Agent 模式和真实 Embedding。
+一个可追溯、可评测、可离线降级的法律分析 Agent：输入合同或劳动争议材料，系统通过 LangGraph 提取案件要素、检索法规、审核引用并生成 Markdown/PDF 报告。
 
-## PyCharm 启动
+> 本项目用于软件工程与 AI 技术演示，不构成法律意见；内置法规是教学样例，正式使用前必须核对权威来源。
 
-1. 用 PyCharm 打开本项目根目录。
-2. 创建 Python 3.11 或更高版本的虚拟环境。
-3. 在 PyCharm Terminal 执行：
+## 演示
 
-```powershell
-python -m pip install -r requirements.txt
+浏览器页面支持问题输入、TXT/DOCX/PDF 上传、离线/Agent 模式、后台进度、执行引擎标识、引用回查和报告下载。
+
+当前仓库提供[三分钟演示脚本](docs/DEMO_SCRIPT.md)。录制视频或 GIF 时不得出现 `.env`、API Key 和个人材料；完成录制后可把链接补充在这里。
+
+## 核心能力
+
+- LangGraph 编排案件抽取、混合检索、引用审核、补充检索和报告生成；
+- 每条引用关联数据库 `article_id`，服务端核验名称、条号和原文；
+- Agent 模式支持 OpenAI 兼容 Chat API，失败时安全降级到规则与模板；
+- 页面明确显示 `智能 Agent`、`离线规则` 或 `Agent 已降级`，避免把降级结果误认为模型结果；
+- FastAPI 后台任务、状态轮询、Markdown/PDF 导出和结构化请求日志；
+- 上传大小、扩展名、MIME、空文件、解析超时和文件名安全校验；
+- 24 条脱敏评测集，输出案件抽取、Recall@5、MRR、Hit@K、延迟和工作流指标；
+- Ruff、mypy、32 项测试、前端生产构建与 GitHub Actions CI；
+- SQLite 零依赖启动，同时保留 Docker Compose 与生产数据库迁移路径。
+
+## 架构
+
+```mermaid
+flowchart LR
+    UI["React + TypeScript"] --> API["FastAPI API"]
+    API --> TASK["后台任务"]
+    TASK --> GRAPH["LangGraph 工作流"]
+    GRAPH --> ANALYZE["规则 / LLM 抽取"]
+    GRAPH --> RETRIEVE["关键词 + Embedding 检索"]
+    GRAPH --> REVIEW["数据库一致性 + 语义审核"]
+    GRAPH --> REPORT["模板 / LLM 报告"]
+    RETRIEVE --> DB[("SQLite 法规与任务")]
+    REVIEW --> DB
+    REPORT --> DB
 ```
 
-4. 新建 Python 运行配置：
-   - Module name：`app.main`
-   - Working directory：项目根目录
-5. 运行后打开 `http://127.0.0.1:8000/docs`。
+## Agent 工作流
 
-也可以直接执行：
+```mermaid
+flowchart TD
+    START --> A["analyze_case"]
+    A --> R["retrieve_laws"]
+    R --> V["review_citations"]
+    V -->|"有可信引用"| W["write_report"]
+    V -->|"无可信引用且未达上限"| X["retry_retrieval"]
+    X --> R
+    V -->|"达到重试上限"| W
+    W --> END
+```
+
+## 技术栈
+
+- 后端：Python 3.11+、FastAPI、Pydantic、SQLAlchemy、LangGraph；
+- 检索：中文二元词哈希向量、关键词/语义加权、可选 OpenAI 兼容 Embedding；
+- 前端：React、TypeScript、Vite、ReactMarkdown；
+- 数据：SQLite、JSONL 教学法规与评测集；
+- 工程：unittest、Ruff、mypy、GitHub Actions、Docker Compose、Nginx。
+
+## 快速启动
+
+### 1. 后端
 
 ```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 python -m app.main
 ```
 
-## 第三周前端启动
+浏览器打开 `http://127.0.0.1:8000/docs`。
 
-后端保持在 `http://127.0.0.1:8000` 运行，再打开一个 PyCharm Terminal：
+PyCharm 运行配置：Module name 为 `app.main`，Working directory 为项目根目录，解释器选择 `.venv\Scripts\python.exe`。
+
+### 2. 前端
 
 ```powershell
 cd frontend
-pnpm install --registry=https://registry.npmmirror.com
+pnpm install
 pnpm run dev
 ```
 
-项目使用 pnpm 11 的依赖脚本白名单，只允许 Vite 构建所需的 `esbuild` 执行安装脚本。若曾经安装失败，更新项目后重新执行一次 `pnpm install` 即可。
+浏览器打开 `http://127.0.0.1:5173`。项目使用 pnpm 11 的 `allowBuilds`，只允许 esbuild 的必要安装脚本。
 
-浏览器访问 `http://127.0.0.1:5173`。页面支持拖拽上传、离线/Agent 模式、后台进度轮询、引用详情以及 Markdown/PDF 下载。
+### 3. Docker（可选）
 
-如果没有 pnpm，可以先安装 Node.js 20 或更高版本，再执行 `corepack enable`。
-
-## Docker Compose 启动
-
-安装 Docker Desktop 后，在项目根目录执行：
+安装 Docker Desktop 后执行：
 
 ```powershell
 docker compose up --build
 ```
 
-- Web 页面：`http://127.0.0.1:3000`
-- Swagger：`http://127.0.0.1:8000/docs`
-- SQLite 数据通过 `legal-data` volume 持久化。
+前端地址为 `http://127.0.0.1:3000`，Swagger 为 `http://127.0.0.1:8000/docs`。当前开发机未安装 Docker，因此仓库不声称镜像已完成本机实测。
 
-## 当前接口
+## 配置
 
-- `GET /health`：服务与法规数量检查；
-- `POST /api/v1/articles/search`：法规检索；
-- `POST /api/v1/cases`：上传 `.txt/.docx/.pdf` 和问题，返回案件要素与引用。
-- `GET /api/v1/articles/{article_id}`：根据 ID 回查法条原文；
-- `POST /api/v1/runs`：执行完整 LangGraph 工作流；
-- `GET /api/v1/runs/{run_id}`：查看任务状态和节点轨迹；
-- `GET /api/v1/runs/{run_id}/citations`：查看引用审核结果；
-- `GET /api/v1/runs/{run_id}/report`：获取 Markdown 报告；
-- `POST /api/v1/runs/{run_id}/retry`：重试失败任务。
-- `GET /api/v1/runs/{run_id}/export?format=markdown|pdf`：下载报告文件。
+复制 `.env.example` 为 `.env`。离线演示保持：
 
-## 第三周 Agent 调用示例
-
-在 Swagger 中调用 `POST /api/v1/runs`，填写：
-
-```text
-question=供应商收款后未按合同交货，我能否解除合同并要求赔偿？
-mode=offline
+```env
+OFFLINE_MODE=true
+EMBEDDING_PROVIDER=hash
 ```
 
-创建接口立即返回 `queued` 和 `run_id`。前端每 1.5 秒查询状态，完成后读取引用和报告。离线模式不需要模型密钥。
+启用 Chat Agent：
 
-如需使用真实模型，复制 `.env.example` 为 `.env`，设置 `OFFLINE_MODE=false`、LLM 与 Embedding 配置，然后运行：
+```env
+OFFLINE_MODE=false
+LLM_API_KEY=你的新密钥
+LLM_BASE_URL=https://api.deepseek.com
+LLM_MODEL=服务商实际支持的模型名
+```
+
+Chat 与 Embedding 独立配置。仅有 DeepSeek Chat Key 不代表存在 Embedding API。完整说明见[配置文档](docs/CONFIGURATION.md)。`.env` 已被 Git 忽略，不要把真实密钥写进 README、截图、测试或 CI。
+
+## API 示例
+
+创建离线任务：
 
 ```powershell
-python scripts\reindex_embeddings.py
+curl.exe -X POST "http://127.0.0.1:8000/api/v1/runs" `
+  -F "question=公司拖欠三个月工资，并且没有签订书面劳动合同" `
+  -F "mode=offline"
 ```
 
-产品范围见 [PRODUCT_SPEC.md](PRODUCT_SPEC.md)，详细开发计划见 [PROJECT_GOALS.md](PROJECT_GOALS.md)，完整验证步骤见 [SELF_TEST.md](SELF_TEST.md)。
+响应：
 
-如果主要用于学习和准备求职，请优先阅读 [学习文档与追加式开发日志](docs/LEARNING_JOURNAL.md)。它按开发阶段解释架构、代码流转、测试、技术取舍和面试回答。
+```json
+{
+  "run_id": 1,
+  "status": "queued",
+  "status_url": "/api/v1/runs/1",
+  "report_url": "/api/v1/runs/1/report"
+}
+```
 
-接口资料：
+查询 `/api/v1/runs/1` 可看到 `execution_engine=rules|llm|fallback` 和实际 `model`。完整接口见[逐接口文档](docs/API_GUIDE_DETAILED.md)与[Apifox OpenAPI](docs/openapi.json)。
 
-- [中文接口说明](docs/API_REFERENCE.md)
-- [可直接导入 Apifox 的 OpenAPI 3.0.3 文件](docs/openapi.json)
-- [DeepSeek、Embedding、MySQL、Redis 配置迁移说明](docs/CONFIGURATION.md)
-- [逐接口含义、请求参数与返回示例](docs/API_GUIDE_DETAILED.md)
+## 评测
 
-> 本项目为软件工程与 AI 技术演示，生成内容不构成法律意见；样例法规正式使用前必须核对权威来源。
+运行完全离线、可复现的评测：
+
+```powershell
+python eval\run_eval.py
+```
+
+当前 24 条脱敏教学样例结果：
+
+| 指标/方案 | 结果 |
+|---|---:|
+| 案件类型准确率 | 100.00% |
+| 关键事实关键词覆盖率 | 93.75% |
+| 离线工作流成功率 | 100.00% |
+| 关键词 Recall@5 / MRR | 1.0000 / 0.8000 |
+| 哈希语义 Recall@5 / MRR | 0.8403 / 0.7118 |
+| 哈希混合 Recall@5 / MRR | 0.8264 / 0.7361 |
+
+首次规则基线的案件类型准确率为 75%，补充“供应商、交付、入职、经济补偿”等领域词后提升到 100%。这组指标只说明当前小型教学集；关键词方案在 10 条法规上优于哈希向量，不能推导真实 Embedding 一定更好。在线 Embedding 未配置，结果明确标记为 `skipped`，不编造第三方模型指标。机器可读结果见[latest.json](eval/results/latest.json)。
+
+## 测试与代码质量
+
+```powershell
+python -m pip install -r requirements-dev.txt
+ruff format --check app eval scripts tests
+ruff check app eval scripts tests
+mypy app/services app/llm eval
+python scripts\run_self_test.py
+cd frontend
+pnpm run build
+```
+
+测试入口会强制设置离线模式并移除模型 Key，不会调用真实 DeepSeek。覆盖正常 API、损坏文件、超大文件、MIME 伪装、恶意文件名、提示/SQL 注入文本、模型超时、非法 JSON、重复提交和 SQLite 锁重试。
+
+## 项目结构
+
+```text
+app/                 FastAPI、数据库、服务和 LangGraph
+frontend/            React + TypeScript 页面
+data/                教学法规 JSONL（运行数据库不提交）
+eval/                脱敏评测集、指标代码和结果
+tests/               单元、集成、安全与端到端测试
+docs/decisions/      技术决策记录
+.github/workflows/   GitHub Actions CI
+```
+
+## 当前限制
+
+- 只有 10 条教学法规，不是全量、权威或自动更新的法规库；
+- 评测集由项目作者构造，只有 24 条，存在规模和标注者偏差；
+- 信息抽取覆盖率采用关键词近似，不等同于法律专家语义评分；
+- 未配置独立在线 Embedding，真实向量对照组尚未运行；
+- BackgroundTasks 与 Web 进程同生命周期，不具备任务持久恢复能力；
+- SQLite 不适合多实例高并发写入，Docker 尚待安装后的真实验收；
+- 不支持 OCR、账号权限、多租户、法规版本同步和真实法律意见。
+
+## 后续方向
+
+1. 双人复核并扩充评测集，接入独立 Embedding 后完成真实向量对照；
+2. 使用 PostgreSQL/pgvector、Alembic、对象存储和持久任务队列；
+3. 增加登录、租户隔离、审计、限流、监控与法规版本管理；
+4. 录制三分钟演示视频并在 README 中加入 GIF。
+
+更多资料：[产品说明](PRODUCT_SPEC.md) · [项目目标](PROJECT_GOALS.md) · [自测手册](SELF_TEST.md) · [学习日志](docs/LEARNING_JOURNAL.md) · [技术决策](docs/decisions/README.md) · [求职材料](docs/JOB_MATERIALS.md)

@@ -28,4 +28,3 @@ def seed_sample_laws(db: Session) -> int:
     db.add_all(records)
     db.commit()
     return len(records)
-

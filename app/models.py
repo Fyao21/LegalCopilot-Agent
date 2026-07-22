@@ -1,6 +1,17 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, func
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -39,7 +50,9 @@ class RetrievalLog(Base):
 
 class ArticleEmbedding(Base):
     __tablename__ = "article_embeddings"
-    __table_args__ = (UniqueConstraint("article_id", "provider", "model", name="uq_article_embedding_provider"),)
+    __table_args__ = (
+        UniqueConstraint("article_id", "provider", "model", name="uq_article_embedding_provider"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     article_id: Mapped[int] = mapped_column(ForeignKey("legal_articles.id", ondelete="CASCADE"), index=True)

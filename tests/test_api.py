@@ -94,6 +94,8 @@ class ApiTests(unittest.TestCase):
             status = client.get(f"/api/v1/runs/{run_id}").json()
             self.assertEqual(status["status"], "completed")
             self.assertEqual(status["facts"]["case_type"], "劳动争议")
+            self.assertEqual(status["execution_engine"], "fallback")
+            self.assertEqual(status["model"], "offline-template")
 
 
 if __name__ == "__main__":

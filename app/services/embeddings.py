@@ -11,7 +11,7 @@ def tokenize(text: str) -> list[str]:
         return []
     if len(normalized) == 1:
         return [normalized]
-    return [normalized[index:index + 2] for index in range(len(normalized) - 1)]
+    return [normalized[index : index + 2] for index in range(len(normalized) - 1)]
 
 
 def embed(text: str) -> list[float]:
@@ -30,4 +30,3 @@ def cosine_similarity(left: list[float], right: list[float]) -> float:
     if len(left) != len(right):
         raise ValueError("向量维度不一致")
     return sum(a * b for a, b in zip(left, right))
-

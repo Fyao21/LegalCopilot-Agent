@@ -3,7 +3,6 @@ import json
 from app.llm import LLMClientError, OpenAICompatibleLLM
 from app.schemas import CaseFacts, ReportDraft, ReviewedCitation
 
-
 SYSTEM_PROMPT = """你是法律分析报告写作组件。只允许使用输入中的案件事实和已审核法规，不得编造新法条、案号或事实。
 返回 JSON：title、analysis、suggestions、evidence_gaps。analysis 中引用条文时只使用 [article_id] 格式。不要输出 Markdown 代码块。"""
 
@@ -14,22 +13,28 @@ def create_report_draft(
     llm: OpenAICompatibleLLM | None,
 ) -> tuple[ReportDraft, str | None]:
     verified = [citation for citation in citations if citation.verified]
+    fallback_reason: str | None
     if llm is not None and verified:
         payload = {
             "facts": facts.model_dump(),
             "verified_citations": [citation.model_dump() for citation in verified],
         }
         try:
-            return llm.invoke_structured(SYSTEM_PROMPT, json.dumps(payload, ensure_ascii=False), ReportDraft), None
+            return llm.invoke_structured(
+                SYSTEM_PROMPT, json.dumps(payload, ensure_ascii=False), ReportDraft
+            ), None
         except LLMClientError as error:
             fallback_reason = f"{error.code}: {error}"
     else:
         fallback_reason = None if llm is None else "没有通过审核的引用"
 
-    citation_summary = "；".join(
-        f"依据 [{citation.article_id}] {citation.law_name}{citation.article_number}"
-        for citation in verified
-    ) or "当前知识库没有找到足够可信的直接依据"
+    citation_summary = (
+        "；".join(
+            f"依据 [{citation.article_id}] {citation.law_name}{citation.article_number}"
+            for citation in verified
+        )
+        or "当前知识库没有找到足够可信的直接依据"
+    )
     analysis = (
         f"本案初步识别为{facts.case_type}。"
         f"当前争议焦点包括：{'；'.join(facts.dispute_focuses) or '材料信息不足，尚未形成明确争议焦点'}。"
@@ -38,7 +43,11 @@ def create_report_draft(
     draft = ReportDraft(
         title=f"{facts.case_type}法律分析报告",
         analysis=analysis,
-        suggestions=["补充能够证明案件事实的原始材料", "核对引用条文的现行有效版本", "复杂案件应咨询具备资质的法律专业人士"],
+        suggestions=[
+            "补充能够证明案件事实的原始材料",
+            "核对引用条文的现行有效版本",
+            "复杂案件应咨询具备资质的法律专业人士",
+        ],
         evidence_gaps=facts.missing_information or ["当前仅依据用户提交材料，证据完整性尚未核验"],
     )
     return draft, fallback_reason
