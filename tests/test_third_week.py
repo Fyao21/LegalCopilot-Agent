@@ -13,13 +13,29 @@ class ThirdWeekTests(unittest.TestCase):
     def _create_completed_run(self, client: TestClient) -> int:
         response = client.post(
             "/api/v1/runs",
-            data={"question": "供应商收款后没有交货，应当承担什么责任？", "mode": "offline"},
+            data={
+                "question": "约定交货期限为30日内，供应商收款后仍未交货，应当承担什么责任？",
+                "mode": "offline",
+            },
         )
         self.assertEqual(response.status_code, 202)
         self.assertEqual(response.json()["status"], "queued")
         run_id = response.json()["run_id"]
         status = client.get(f"/api/v1/runs/{run_id}")
-        self.assertEqual(status.json()["status"], "completed")
+        self.assertEqual(status.json()["status"], "waiting_for_approval")
+        pending = client.get(f"/api/v1/runs/{run_id}/pending-action").json()
+        approval = client.post(
+            f"/api/v1/runs/{run_id}/approvals",
+            headers={"Idempotency-Key": f"third-week-approve-{run_id}"},
+            json={
+                "expected_state_version": pending["state_version"],
+                "action": "approve",
+                "comment": "导出测试审批",
+                "reviewer": "自动测试",
+            },
+        )
+        self.assertEqual(approval.status_code, 202)
+        self.assertEqual(client.get(f"/api/v1/runs/{run_id}").json()["status"], "completed")
         return run_id
 
     def test_markdown_export(self) -> None:
@@ -28,7 +44,7 @@ class ThirdWeekTests(unittest.TestCase):
             response = client.get(f"/api/v1/runs/{run_id}/export?format=markdown")
             self.assertEqual(response.status_code, 200)
             self.assertIn("text/markdown", response.headers["content-type"])
-            self.assertIn(f"legal-report-{run_id}.md", response.headers["content-disposition"])
+            self.assertIn(f"legal-report-{run_id}-v1.md", response.headers["content-disposition"])
             self.assertIn("法律分析报告", response.text)
 
     def test_pdf_export(self) -> None:

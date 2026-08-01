@@ -9,12 +9,20 @@ from app.config import get_settings
 from app.database import Base
 from app.llm import LLMClientError, OpenAICompatibleLLM
 from app.models import AgentRun, LegalArticle
-from app.schemas import CaseFacts, Citation
+from app.schemas import CaseFacts, Citation, ReportDraft
 from app.services.case_agent import analyze_case_agent
 from app.services.citation_reviewer import review_citations
-from app.services.embedding_provider import HashEmbeddingProvider
+from app.services.embedding_index import ensure_article_embeddings
+from app.services.embedding_provider import (
+    EmbeddingProvider,
+    EmbeddingProviderError,
+    HashEmbeddingProvider,
+    OpenAICompatibleEmbeddingProvider,
+    get_embedding_provider,
+)
 from app.services.legal_chunker import split_legal_article
 from app.services.mixed_retriever import retrieve_articles_mixed
+from app.services.retrieval_service import retrieve_articles_configured
 from app.services.seed import seed_sample_laws
 from app.workflows import execute_agent_run
 
@@ -65,6 +73,86 @@ class SecondWeekServiceTests(unittest.TestCase):
         second = retrieve_articles_mixed(self.db, "合同责任", provider, limit=1)
         self.assertEqual(first.citations[0].article_id, second.citations[0].article_id)
 
+    def test_embedding_index_respects_provider_batch_size(self) -> None:
+        class RecordingProvider(EmbeddingProvider):
+            provider_name = "recording"
+            model_name = "recording-v1"
+
+            def __init__(self) -> None:
+                self.batch_sizes: list[int] = []
+
+            def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                self.batch_sizes.append(len(texts))
+                return [[1.0, 0.0, 0.0] for _ in texts]
+
+        provider = RecordingProvider()
+        updated = ensure_article_embeddings(self.db, provider)
+
+        self.assertEqual(updated, self.db.query(LegalArticle).count())
+        self.assertEqual(sum(provider.batch_sizes), updated)
+        self.assertLessEqual(max(provider.batch_sizes), get_settings().embedding_batch_size)
+
+    def test_online_embedding_failure_falls_back_to_hash(self) -> None:
+        class FailingProvider(EmbeddingProvider):
+            provider_name = "online-test"
+            model_name = "online-test-v1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                self.calls += 1
+                raise EmbeddingProviderError("测试在线服务不可用")
+
+        provider = FailingProvider()
+        with patch(
+            "app.services.retrieval_service.get_embedding_provider",
+            return_value=provider,
+        ):
+            result = retrieve_articles_configured(self.db, "合同责任", limit=3)
+
+        self.assertEqual(result.provider, "hash")
+        self.assertEqual(len(result.citations), 3)
+        self.assertEqual(provider.calls, 2)
+        self.assertIn("连续 2 次请求失败", result.fallback_reason)
+
+    def test_transient_online_embedding_failure_is_retried_before_hash_fallback(self) -> None:
+        class FlakyProvider(EmbeddingProvider):
+            provider_name = "online-test"
+            model_name = "online-test-v1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                self.calls += 1
+                if self.calls == 1:
+                    raise EmbeddingProviderError("第一次请求瞬时失败")
+                return [[1.0, 0.0, 0.0] for _ in texts]
+
+        provider = FlakyProvider()
+        with patch(
+            "app.services.retrieval_service.get_embedding_provider",
+            return_value=provider,
+        ):
+            result = retrieve_articles_configured(self.db, "合同责任", limit=3)
+
+        self.assertEqual(result.provider, "online-test")
+        self.assertIsNone(result.fallback_reason)
+        self.assertGreaterEqual(provider.calls, 3)
+
+    def test_seed_incrementally_restores_only_missing_articles(self) -> None:
+        original_count = self.db.query(LegalArticle).count()
+        article = self.db.query(LegalArticle).order_by(LegalArticle.id).first()
+        self.db.delete(article)
+        self.db.commit()
+
+        inserted = seed_sample_laws(self.db)
+
+        self.assertEqual(inserted, 1)
+        self.assertEqual(self.db.query(LegalArticle).count(), original_count)
+        self.assertEqual(seed_sample_laws(self.db), 0)
+
     def test_llm_failure_falls_back_to_rules(self) -> None:
         class FailingLLM:
             def invoke_structured(self, *_args, **_kwargs):
@@ -75,6 +163,35 @@ class SecondWeekServiceTests(unittest.TestCase):
         self.assertEqual(outcome.facts.case_type, "劳动争议")
         self.assertIn("LLM_TIMEOUT", outcome.fallback_reason)
 
+    def test_llm_unrecognized_food_case_is_enriched_by_local_classifier(self) -> None:
+        class UncertainLLM:
+            def invoke_structured(self, *_args, **_kwargs):
+                return CaseFacts(
+                    case_type="未识别",
+                    missing_information=["中毒时间"],
+                    questions_for_user=["何时就餐？"],
+                )
+
+        outcome = analyze_case_agent("", "食物中毒商家需要负责吗", UncertainLLM())
+
+        self.assertEqual(outcome.source, "llm_enriched")
+        self.assertEqual(outcome.facts.case_type, "食品安全与消费者权益纠纷")
+        self.assertIn("中毒时间", outcome.facts.missing_information)
+        self.assertIn("食物中毒商家需要负责吗", outcome.facts.dispute_focuses)
+
+    def test_report_draft_normalizes_string_lists_from_llm(self) -> None:
+        draft = ReportDraft.model_validate(
+            {
+                "title": "食品安全分析",
+                "analysis": "经营者应依法承担责任。",
+                "suggestions": "保留就餐凭证；及时就医",
+                "evidence_gaps": "缺少诊断证明",
+            }
+        )
+
+        self.assertEqual(draft.suggestions, ["保留就餐凭证", "及时就医"])
+        self.assertEqual(draft.evidence_gaps, ["缺少诊断证明"])
+
     def test_empty_knowledge_base_stops_after_bounded_retries(self) -> None:
         empty_engine = create_engine("sqlite:///:memory:")
         Base.metadata.create_all(empty_engine)
@@ -84,7 +201,7 @@ class SecondWeekServiceTests(unittest.TestCase):
             empty_db.commit()
             empty_db.refresh(run)
             execute_agent_run(empty_db, run)
-            self.assertEqual(run.status, "completed")
+            self.assertEqual(run.status, "waiting_for_approval")
             self.assertEqual(run.retry_count, 2)
             self.assertIn("低置信度", run.report_markdown)
         empty_engine.dispose()
@@ -131,6 +248,45 @@ class SecondWeekServiceTests(unittest.TestCase):
         self.assertEqual(result.case_type, "合同纠纷")
         self.assertEqual(FakeClient.calls, 2)
 
+    def test_repeated_blank_llm_case_type_falls_back_to_rules(self) -> None:
+        class FakeResponse:
+            status_code = 200
+
+            def raise_for_status(self) -> None:
+                return None
+
+            def json(self) -> dict:
+                return {"choices": [{"message": {"content": '{"case_type":"   "}'}}]}
+
+        class FakeClient:
+            calls = 0
+
+            def __init__(self, **_kwargs):
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def post(self, *_args, **_kwargs):
+                FakeClient.calls += 1
+                return FakeResponse()
+
+        client = OpenAICompatibleLLM("test-key", "https://example.test/v1", "test-model")
+        with patch("app.llm.client.httpx.Client", FakeClient):
+            outcome = analyze_case_agent(
+                "公司拖欠三个月工资，并且没有签订书面劳动合同。",
+                "我可以要求公司支付工资吗？",
+                client,
+            )
+
+        self.assertEqual(FakeClient.calls, 2)
+        self.assertEqual(outcome.source, "rules_fallback")
+        self.assertEqual(outcome.facts.case_type, "劳动争议")
+        self.assertIn("LLM_INVALID_OUTPUT", outcome.fallback_reason)
+
     def test_openai_compatible_environment_aliases(self) -> None:
         values = {
             "OPENAI_API_KEY": "test-key",
@@ -147,6 +303,23 @@ class SecondWeekServiceTests(unittest.TestCase):
                 self.assertEqual(settings.llm_model, "deepseek-v4-flash")
                 self.assertFalse(settings.offline_mode)
                 self.assertIsNone(settings.embedding_api_key)
+        finally:
+            get_settings.cache_clear()
+
+    def test_openai_compatible_embedding_provider_is_selected_from_environment(self) -> None:
+        values = {
+            "OFFLINE_MODE": "false",
+            "EMBEDDING_PROVIDER": "openai-compatible",
+            "EMBEDDING_API_KEY": "test-embedding-key",
+            "EMBEDDING_BASE_URL": "https://embedding.example.test/v1",
+            "EMBEDDING_MODEL": "test-embedding-model",
+        }
+        try:
+            with patch.dict(os.environ, values, clear=True):
+                get_settings.cache_clear()
+                provider = get_embedding_provider()
+                self.assertIsInstance(provider, OpenAICompatibleEmbeddingProvider)
+                self.assertEqual(provider.model_name, "test-embedding-model")
         finally:
             get_settings.cache_clear()
 

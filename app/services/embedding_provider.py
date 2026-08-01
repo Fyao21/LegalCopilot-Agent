@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 import httpx
 
@@ -8,6 +9,13 @@ from app.services.embeddings import embed
 
 class EmbeddingProviderError(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class EmbeddingUsageSnapshot:
+    input_tokens: int = 0
+    request_count: int = 0
+    retry_count: int = 0
 
 
 class EmbeddingProvider(ABC):
@@ -20,6 +28,9 @@ class EmbeddingProvider(ABC):
 
     def embed_query(self, text: str) -> list[float]:
         return self.embed_documents([text])[0]
+
+    def usage_snapshot(self) -> EmbeddingUsageSnapshot:
+        return EmbeddingUsageSnapshot()
 
 
 class HashEmbeddingProvider(EmbeddingProvider):
@@ -38,8 +49,18 @@ class OpenAICompatibleEmbeddingProvider(EmbeddingProvider):
         self.base_url = base_url.rstrip("/")
         self.model_name = model_name
         self.timeout_seconds = timeout_seconds
+        self._input_tokens = 0
+        self._request_count = 0
+
+    def usage_snapshot(self) -> EmbeddingUsageSnapshot:
+        return EmbeddingUsageSnapshot(
+            input_tokens=self._input_tokens,
+            request_count=self._request_count,
+            retry_count=max(0, self._request_count - 1),
+        )
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        self._request_count += 1
         try:
             with httpx.Client(timeout=self.timeout_seconds) as client:
                 response = client.post(
@@ -50,14 +71,21 @@ class OpenAICompatibleEmbeddingProvider(EmbeddingProvider):
             if response.status_code in {401, 403}:
                 raise EmbeddingProviderError("Embedding 服务认证失败")
             response.raise_for_status()
-            rows = sorted(response.json()["data"], key=lambda item: item["index"])
+            response_body = response.json()
+            rows = sorted(response_body["data"], key=lambda item: item["index"])
+            usage = response_body.get("usage") or {}
+            self._input_tokens += int(
+                usage.get("prompt_tokens")
+                or usage.get("total_tokens")
+                or sum(max(1, (len(text) + 3) // 4) for text in texts if text)
+            )
             vectors = [row["embedding"] for row in rows]
             if len(vectors) != len(texts):
                 raise EmbeddingProviderError("Embedding 返回数量与输入数量不一致")
             if vectors and any(len(vector) != len(vectors[0]) for vector in vectors):
                 raise EmbeddingProviderError("Embedding 返回向量维度不一致")
             return vectors
-        except (httpx.HTTPError, KeyError, TypeError) as error:
+        except (httpx.HTTPError, IndexError, KeyError, TypeError, ValueError) as error:
             raise EmbeddingProviderError(f"Embedding 请求失败：{error}") from error
 
 
@@ -65,8 +93,16 @@ def get_embedding_provider(force_offline: bool = False) -> EmbeddingProvider:
     settings = get_settings()
     if force_offline or settings.offline_mode or settings.embedding_provider == "hash":
         return HashEmbeddingProvider()
+    if settings.embedding_provider != "openai-compatible":
+        raise EmbeddingProviderError(
+            f"不支持的 EMBEDDING_PROVIDER：{settings.embedding_provider}，可选值为 hash 或 openai-compatible"
+        )
     if not settings.embedding_api_key:
         raise EmbeddingProviderError("未配置 EMBEDDING_API_KEY")
+    if not settings.embedding_base_url:
+        raise EmbeddingProviderError("未配置 EMBEDDING_BASE_URL")
+    if not settings.embedding_model:
+        raise EmbeddingProviderError("未配置 EMBEDDING_MODEL")
     return OpenAICompatibleEmbeddingProvider(
         api_key=settings.embedding_api_key,
         base_url=settings.embedding_base_url,

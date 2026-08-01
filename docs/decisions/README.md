@@ -8,3 +8,6 @@
 4. [工作流使用 LangGraph](0004-use-langgraph.md)
 5. [迁移 PostgreSQL 与 pgvector 的条件](0005-migrate-to-postgresql-pgvector.md)
 6. [不展示模型隐藏思维链](0006-no-chain-of-thought.md)
+7. [报告必须批准后才能发布](0007-require-approval-before-report-release.md)
+8. [法规版本必须在召回前按案件日期过滤](0008-filter-law-versions-before-retrieval.md)
+9. [本地持久化经过白名单过滤的 Agent Span](0009-store-allowlisted-agent-spans.md)
