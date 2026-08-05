@@ -25,12 +25,20 @@ class Settings:
     embedding_api_key: str | None
     embedding_base_url: str
     embedding_model: str
+    embedding_batch_size: int
     retrieval_keyword_weight: float
     retrieval_semantic_weight: float
     max_workflow_retries: int
+    max_clarification_rounds: int
+    max_questions_per_round: int
     max_upload_bytes: int
     document_parse_timeout_seconds: float
     cors_origins: tuple[str, ...]
+    observability_enabled: bool
+    telemetry_service_name: str
+    llm_input_cost_per_million_cny: float
+    llm_output_cost_per_million_cny: float
+    embedding_cost_per_million_cny: float
 
 
 @lru_cache
@@ -70,10 +78,32 @@ def get_settings() -> Settings:
         embedding_api_key=embedding_api_key,
         embedding_base_url=(os.getenv("EMBEDDING_BASE_URL") or "").rstrip("/"),
         embedding_model=os.getenv("EMBEDDING_MODEL", "text-embedding-3-small"),
+        embedding_batch_size=max(1, int(os.getenv("EMBEDDING_BATCH_SIZE", "10"))),
         retrieval_keyword_weight=keyword_weight / total_weight,
         retrieval_semantic_weight=semantic_weight / total_weight,
         max_workflow_retries=max(0, int(os.getenv("MAX_WORKFLOW_RETRIES", "2"))),
+        max_clarification_rounds=max(1, int(os.getenv("MAX_CLARIFICATION_ROUNDS", "3"))),
+        max_questions_per_round=max(1, min(5, int(os.getenv("MAX_QUESTIONS_PER_ROUND", "5")))),
         max_upload_bytes=max(1, int(os.getenv("MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)))),
         document_parse_timeout_seconds=max(1.0, float(os.getenv("DOCUMENT_PARSE_TIMEOUT_SECONDS", "15"))),
         cors_origins=cors_origins,
+        observability_enabled=os.getenv("OBSERVABILITY_ENABLED", "true").strip().lower()
+        in {"1", "true", "yes", "on"},
+        telemetry_service_name=os.getenv(
+            "TELEMETRY_SERVICE_NAME",
+            "legal-copilot-agent",
+        ).strip()
+        or "legal-copilot-agent",
+        llm_input_cost_per_million_cny=max(
+            0.0,
+            float(os.getenv("LLM_INPUT_COST_PER_1M_CNY", "0")),
+        ),
+        llm_output_cost_per_million_cny=max(
+            0.0,
+            float(os.getenv("LLM_OUTPUT_COST_PER_1M_CNY", "0")),
+        ),
+        embedding_cost_per_million_cny=max(
+            0.0,
+            float(os.getenv("EMBEDDING_COST_PER_1M_CNY", "0")),
+        ),
     )

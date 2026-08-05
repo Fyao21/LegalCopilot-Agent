@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-07-22T18:13:39.999449+00:00",
+  "generated_at": "2026-07-23T04:59:17.221213+00:00",
   "dataset_path": "eval/dataset.jsonl",
-  "dataset_sha256": "018c98154ea3eb4606c19dc8041ac816c1ab811fa9c989c532a731523e58bf9b",
+  "dataset_sha256": "5ec637ce53f7cc6f429c4a7ebcd40d41f64f71fa7f2dfded86ad08c6e0e0008c",
   "dataset_size": 24,
   "environment": {
     "workflow_mode": "offline",
@@ -21,531 +21,24 @@
       "name": "keyword",
       "status": "completed",
       "metrics": {
-        "recall_at_5": 1.0,
-        "mrr": 0.8,
-        "hit_at_1": 0.6667,
-        "hit_at_3": 0.9583,
-        "hit_at_5": 1.0,
-        "precision_at_5": 0.2917,
-        "average_latency_ms": 0.146,
-        "p95_latency_ms": 0.223
-      },
-      "cases": [
-        {
-          "case_id": "C001",
-          "ranked_article_ids": [
-            3,
-            4,
-            10,
-            1,
-            2
-          ],
-          "relevant_article_ids": [
-            3,
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.165
-        },
-        {
-          "case_id": "C002",
-          "ranked_article_ids": [
-            2,
-            4,
-            7,
-            1,
-            3
-          ],
-          "relevant_article_ids": [
-            2,
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.141
-        },
-        {
-          "case_id": "C003",
-          "ranked_article_ids": [
-            5,
-            4,
-            6,
-            3,
-            7
-          ],
-          "relevant_article_ids": [
-            5
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.133
-        },
-        {
-          "case_id": "C004",
-          "ranked_article_ids": [
-            4,
-            3,
-            5,
-            1,
-            2
-          ],
-          "relevant_article_ids": [
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.132
-        },
-        {
-          "case_id": "C005",
-          "ranked_article_ids": [
-            4,
-            1,
-            3,
-            2,
-            6
-          ],
-          "relevant_article_ids": [
-            1
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.135
-        },
-        {
-          "case_id": "C006",
-          "ranked_article_ids": [
-            4,
-            5,
-            1,
-            3,
-            2
-          ],
-          "relevant_article_ids": [
-            1,
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.3333333333333333,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.122
-        },
-        {
-          "case_id": "C007",
-          "ranked_article_ids": [
-            2,
-            1,
-            4,
-            7,
-            3
-          ],
-          "relevant_article_ids": [
-            2
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.124
-        },
-        {
-          "case_id": "C008",
-          "ranked_article_ids": [
-            3,
-            2,
-            1,
-            4,
-            6
-          ],
-          "relevant_article_ids": [
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.139
-        },
-        {
-          "case_id": "C009",
-          "ranked_article_ids": [
-            5,
-            7,
-            2,
-            3,
-            4
-          ],
-          "relevant_article_ids": [
-            2,
-            3,
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.3333333333333333,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.6,
-          "latency_ms": 0.123
-        },
-        {
-          "case_id": "C010",
-          "ranked_article_ids": [
-            4,
-            3,
-            5,
-            1,
-            2
-          ],
-          "relevant_article_ids": [
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.13
-        },
-        {
-          "case_id": "C011",
-          "ranked_article_ids": [
-            5,
-            3,
-            4,
-            6,
-            8
-          ],
-          "relevant_article_ids": [
-            5
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.177
-        },
-        {
-          "case_id": "C012",
-          "ranked_article_ids": [
-            1,
-            4,
-            3,
-            6,
-            2
-          ],
-          "relevant_article_ids": [
-            1,
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.223
-        },
-        {
-          "case_id": "L001",
-          "ranked_article_ids": [
-            10,
-            6,
-            7,
-            9,
-            8
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.134
-        },
-        {
-          "case_id": "L002",
-          "ranked_article_ids": [
-            10,
-            7,
-            9,
-            6,
-            8
-          ],
-          "relevant_article_ids": [
-            10
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.131
-        },
-        {
-          "case_id": "L003",
-          "ranked_article_ids": [
-            7,
-            10,
-            6,
-            8,
-            9
-          ],
-          "relevant_article_ids": [
-            6,
-            7
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.126
-        },
-        {
-          "case_id": "L004",
-          "ranked_article_ids": [
-            8,
-            9,
-            7,
-            6,
-            10
-          ],
-          "relevant_article_ids": [
-            8,
-            9
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.131
-        },
-        {
-          "case_id": "L005",
-          "ranked_article_ids": [
-            9,
-            8,
-            10,
-            6,
-            7
-          ],
-          "relevant_article_ids": [
-            9
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.13
-        },
-        {
-          "case_id": "L006",
-          "ranked_article_ids": [
-            6,
-            7,
-            10,
-            9,
-            8
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.129
-        },
-        {
-          "case_id": "L007",
-          "ranked_article_ids": [
-            10,
-            9,
-            7,
-            6,
-            8
-          ],
-          "relevant_article_ids": [
-            10
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.141
-        },
-        {
-          "case_id": "L008",
-          "ranked_article_ids": [
-            9,
-            8,
-            7,
-            10,
-            6
-          ],
-          "relevant_article_ids": [
-            6,
-            7,
-            8
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.6,
-          "latency_ms": 0.139
-        },
-        {
-          "case_id": "L009",
-          "ranked_article_ids": [
-            9,
-            8,
-            10,
-            6,
-            7
-          ],
-          "relevant_article_ids": [
-            8,
-            9
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.133
-        },
-        {
-          "case_id": "L010",
-          "ranked_article_ids": [
-            9,
-            5,
-            6,
-            10,
-            1
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.3333333333333333,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.122
-        },
-        {
-          "case_id": "L011",
-          "ranked_article_ids": [
-            9,
-            10,
-            2,
-            4,
-            8
-          ],
-          "relevant_article_ids": [
-            10
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.295
-        },
-        {
-          "case_id": "L012",
-          "ranked_article_ids": [
-            9,
-            5,
-            10,
-            4,
-            6
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.2,
-          "hit_at_1": 0.0,
-          "hit_at_3": 0.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.159
-        }
-      ]
-    },
-    {
-      "name": "hash_semantic",
-      "status": "completed",
-      "metrics": {
-        "recall_at_5": 0.8403,
-        "mrr": 0.7118,
-        "hit_at_1": 0.5833,
-        "hit_at_3": 0.8333,
+        "recall_at_5": 0.7639,
+        "mrr": 0.6736,
+        "hit_at_1": 0.5417,
+        "hit_at_3": 0.7917,
         "hit_at_5": 0.875,
-        "precision_at_5": 0.25,
-        "average_latency_ms": 0.172,
-        "p95_latency_ms": 0.258
+        "precision_at_5": 0.1917,
+        "average_latency_ms": 0.592,
+        "p95_latency_ms": 0.724
       },
       "cases": [
         {
           "case_id": "C001",
           "ranked_article_ids": [
-            4,
-            5,
-            2,
             3,
-            1
+            4,
+            10,
+            13,
+            19
           ],
           "relevant_article_ids": [
             3,
@@ -557,100 +50,19 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.4,
-          "latency_ms": 0.172
+          "latency_ms": 0.723
         },
         {
           "case_id": "C002",
           "ranked_article_ids": [
             2,
+            19,
             4,
             7,
-            10,
-            3
+            14
           ],
           "relevant_article_ids": [
             2,
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.162
-        },
-        {
-          "case_id": "C003",
-          "ranked_article_ids": [
-            5,
-            4,
-            3,
-            9,
-            1
-          ],
-          "relevant_article_ids": [
-            5
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.158
-        },
-        {
-          "case_id": "C004",
-          "ranked_article_ids": [
-            4,
-            5,
-            3,
-            6,
-            8
-          ],
-          "relevant_article_ids": [
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.158
-        },
-        {
-          "case_id": "C005",
-          "ranked_article_ids": [
-            3,
-            1,
-            4,
-            2,
-            6
-          ],
-          "relevant_article_ids": [
-            1
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.163
-        },
-        {
-          "case_id": "C006",
-          "ranked_article_ids": [
-            3,
-            4,
-            9,
-            5,
-            7
-          ],
-          "relevant_article_ids": [
-            1,
             3
           ],
           "recall_at_5": 0.5,
@@ -659,98 +71,16 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.158
+          "latency_ms": 0.733
         },
         {
-          "case_id": "C007",
+          "case_id": "C003",
           "ranked_article_ids": [
-            2,
+            5,
+            17,
             4,
-            1,
-            7,
-            3
-          ],
-          "relevant_article_ids": [
-            2
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.157
-        },
-        {
-          "case_id": "C008",
-          "ranked_article_ids": [
-            5,
-            3,
-            1,
-            8,
-            2
-          ],
-          "relevant_article_ids": [
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.16
-        },
-        {
-          "case_id": "C009",
-          "ranked_article_ids": [
-            2,
-            5,
-            3,
-            7,
-            1
-          ],
-          "relevant_article_ids": [
-            2,
-            3,
-            4
-          ],
-          "recall_at_5": 0.6666666666666666,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.154
-        },
-        {
-          "case_id": "C010",
-          "ranked_article_ids": [
-            4,
-            1,
-            5,
-            9,
-            6
-          ],
-          "relevant_article_ids": [
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 0.163
-        },
-        {
-          "case_id": "C011",
-          "ranked_article_ids": [
-            5,
-            3,
-            4,
-            1,
-            6
+            6,
+            21
           ],
           "relevant_article_ids": [
             5
@@ -761,16 +91,179 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.161
+          "latency_ms": 0.573
+        },
+        {
+          "case_id": "C004",
+          "ranked_article_ids": [
+            4,
+            36,
+            3,
+            5,
+            12
+          ],
+          "relevant_article_ids": [
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.571
+        },
+        {
+          "case_id": "C005",
+          "ranked_article_ids": [
+            4,
+            1,
+            3,
+            11,
+            20
+          ],
+          "relevant_article_ids": [
+            1
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.639
+        },
+        {
+          "case_id": "C006",
+          "ranked_article_ids": [
+            4,
+            5,
+            12,
+            11,
+            13
+          ],
+          "relevant_article_ids": [
+            1,
+            3
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 0.564
+        },
+        {
+          "case_id": "C007",
+          "ranked_article_ids": [
+            2,
+            14,
+            1,
+            4,
+            7
+          ],
+          "relevant_article_ids": [
+            2
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.546
+        },
+        {
+          "case_id": "C008",
+          "ranked_article_ids": [
+            14,
+            3,
+            13,
+            2,
+            11
+          ],
+          "relevant_article_ids": [
+            3
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.557
+        },
+        {
+          "case_id": "C009",
+          "ranked_article_ids": [
+            20,
+            5,
+            12,
+            22,
+            23
+          ],
+          "relevant_article_ids": [
+            2,
+            3,
+            4
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 0.526
+        },
+        {
+          "case_id": "C010",
+          "ranked_article_ids": [
+            4,
+            36,
+            3,
+            5,
+            12
+          ],
+          "relevant_article_ids": [
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.646
+        },
+        {
+          "case_id": "C011",
+          "ranked_article_ids": [
+            5,
+            3,
+            4,
+            6,
+            8
+          ],
+          "relevant_article_ids": [
+            5
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.547
         },
         {
           "case_id": "C012",
           "ranked_article_ids": [
             1,
-            3,
             4,
-            2,
-            9
+            11,
+            3,
+            6
           ],
           "relevant_article_ids": [
             1,
@@ -782,19 +275,362 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.4,
-          "latency_ms": 0.166
+          "latency_ms": 0.584
         },
         {
           "case_id": "L001",
           "ranked_article_ids": [
-            9,
-            6,
             10,
+            22,
+            6,
             7,
-            8
+            9
           ],
           "relevant_article_ids": [
             6
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.561
+        },
+        {
+          "case_id": "L002",
+          "ranked_article_ids": [
+            10,
+            15,
+            19,
+            7,
+            9
+          ],
+          "relevant_article_ids": [
+            10
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.546
+        },
+        {
+          "case_id": "L003",
+          "ranked_article_ids": [
+            19,
+            7,
+            10,
+            18,
+            20
+          ],
+          "relevant_article_ids": [
+            6,
+            7
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.545
+        },
+        {
+          "case_id": "L004",
+          "ranked_article_ids": [
+            21,
+            8,
+            22,
+            23,
+            26
+          ],
+          "relevant_article_ids": [
+            8,
+            9
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.545
+        },
+        {
+          "case_id": "L005",
+          "ranked_article_ids": [
+            9,
+            19,
+            22,
+            23,
+            8
+          ],
+          "relevant_article_ids": [
+            9
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.654
+        },
+        {
+          "case_id": "L006",
+          "ranked_article_ids": [
+            6,
+            7,
+            22,
+            10,
+            19
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.531
+        },
+        {
+          "case_id": "L007",
+          "ranked_article_ids": [
+            10,
+            19,
+            9,
+            15,
+            7
+          ],
+          "relevant_article_ids": [
+            10
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.566
+        },
+        {
+          "case_id": "L008",
+          "ranked_article_ids": [
+            21,
+            9,
+            22,
+            8,
+            23
+          ],
+          "relevant_article_ids": [
+            6,
+            7,
+            8
+          ],
+          "recall_at_5": 0.3333333333333333,
+          "mrr": 0.25,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.558
+        },
+        {
+          "case_id": "L009",
+          "ranked_article_ids": [
+            9,
+            21,
+            23,
+            22,
+            26
+          ],
+          "relevant_article_ids": [
+            8,
+            9
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.535
+        },
+        {
+          "case_id": "L010",
+          "ranked_article_ids": [
+            9,
+            5,
+            6,
+            10,
+            19
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.591
+        },
+        {
+          "case_id": "L011",
+          "ranked_article_ids": [
+            15,
+            19,
+            9,
+            10,
+            16
+          ],
+          "relevant_article_ids": [
+            10
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.25,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 0.724
+        },
+        {
+          "case_id": "L012",
+          "ranked_article_ids": [
+            16,
+            9,
+            19,
+            5,
+            10
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 0.634
+        }
+      ]
+    },
+    {
+      "name": "hash_semantic",
+      "status": "completed",
+      "metrics": {
+        "recall_at_5": 0.6458,
+        "mrr": 0.4875,
+        "hit_at_1": 0.2917,
+        "hit_at_3": 0.75,
+        "hit_at_5": 0.7917,
+        "precision_at_5": 0.1833,
+        "average_latency_ms": 1.524,
+        "p95_latency_ms": 1.81
+      },
+      "cases": [
+        {
+          "case_id": "C001",
+          "ranked_article_ids": [
+            33,
+            4,
+            35,
+            5,
+            2
+          ],
+          "relevant_article_ids": [
+            3,
+            4
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.126
+        },
+        {
+          "case_id": "C002",
+          "ranked_article_ids": [
+            19,
+            12,
+            2,
+            21,
+            18
+          ],
+          "relevant_article_ids": [
+            2,
+            3
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.192
+        },
+        {
+          "case_id": "C003",
+          "ranked_article_ids": [
+            5,
+            24,
+            22,
+            4,
+            28
+          ],
+          "relevant_article_ids": [
+            5
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.574
+        },
+        {
+          "case_id": "C004",
+          "ranked_article_ids": [
+            4,
+            32,
+            12,
+            36,
+            5
+          ],
+          "relevant_article_ids": [
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.947
+        },
+        {
+          "case_id": "C005",
+          "ranked_article_ids": [
+            3,
+            1,
+            4,
+            2,
+            13
+          ],
+          "relevant_article_ids": [
+            1
           ],
           "recall_at_5": 1.0,
           "mrr": 0.5,
@@ -802,7 +638,171 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.158
+          "latency_ms": 1.81
+        },
+        {
+          "case_id": "C006",
+          "ranked_article_ids": [
+            18,
+            13,
+            3,
+            11,
+            12
+          ],
+          "relevant_article_ids": [
+            1,
+            3
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.411
+        },
+        {
+          "case_id": "C007",
+          "ranked_article_ids": [
+            2,
+            18,
+            4,
+            28,
+            30
+          ],
+          "relevant_article_ids": [
+            2
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.378
+        },
+        {
+          "case_id": "C008",
+          "ranked_article_ids": [
+            14,
+            22,
+            28,
+            21,
+            5
+          ],
+          "relevant_article_ids": [
+            3
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 1.381
+        },
+        {
+          "case_id": "C009",
+          "ranked_article_ids": [
+            22,
+            12,
+            18,
+            19,
+            2
+          ],
+          "relevant_article_ids": [
+            2,
+            3,
+            4
+          ],
+          "recall_at_5": 0.3333333333333333,
+          "mrr": 0.2,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.453
+        },
+        {
+          "case_id": "C010",
+          "ranked_article_ids": [
+            4,
+            22,
+            1,
+            24,
+            5
+          ],
+          "relevant_article_ids": [
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.478
+        },
+        {
+          "case_id": "C011",
+          "ranked_article_ids": [
+            14,
+            5,
+            11,
+            3,
+            4
+          ],
+          "relevant_article_ids": [
+            5
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.566
+        },
+        {
+          "case_id": "C012",
+          "ranked_article_ids": [
+            1,
+            13,
+            3,
+            4,
+            2
+          ],
+          "relevant_article_ids": [
+            1,
+            3
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.4,
+          "latency_ms": 1.685
+        },
+        {
+          "case_id": "L001",
+          "ranked_article_ids": [
+            9,
+            22,
+            6,
+            27,
+            24
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.686
         },
         {
           "case_id": "L002",
@@ -810,8 +810,8 @@
             6,
             7,
             10,
-            9,
-            4
+            16,
+            9
           ],
           "relevant_article_ids": [
             10
@@ -822,16 +822,16 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.156
+          "latency_ms": 1.673
         },
         {
           "case_id": "L003",
           "ranked_article_ids": [
             7,
             10,
+            18,
             6,
-            8,
-            9
+            16
           ],
           "relevant_article_ids": [
             6,
@@ -843,37 +843,37 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.4,
-          "latency_ms": 0.152
+          "latency_ms": 1.598
         },
         {
           "case_id": "L004",
           "ranked_article_ids": [
+            22,
+            26,
             8,
-            7,
-            5,
-            1,
-            9
+            21,
+            23
           ],
           "relevant_article_ids": [
             8,
             9
           ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
+          "recall_at_5": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.159
+          "precision_at_5": 0.2,
+          "latency_ms": 1.595
         },
         {
           "case_id": "L005",
           "ranked_article_ids": [
             9,
+            22,
             10,
-            6,
-            7,
-            8
+            19,
+            26
           ],
           "relevant_article_ids": [
             9
@@ -884,16 +884,523 @@
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.155
+          "latency_ms": 1.527
         },
         {
           "case_id": "L006",
           "ranked_article_ids": [
+            22,
+            25,
+            28,
+            19,
+            30
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 1.53
+        },
+        {
+          "case_id": "L007",
+          "ranked_article_ids": [
+            7,
+            10,
+            6,
+            18,
+            16
+          ],
+          "relevant_article_ids": [
+            10
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.573
+        },
+        {
+          "case_id": "L008",
+          "ranked_article_ids": [
             10,
             7,
-            9,
+            23,
+            8,
+            9
+          ],
+          "relevant_article_ids": [
             6,
+            7,
+            8
+          ],
+          "recall_at_5": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.4,
+          "latency_ms": 1.567
+        },
+        {
+          "case_id": "L009",
+          "ranked_article_ids": [
+            23,
+            21,
+            9,
+            26,
+            22
+          ],
+          "relevant_article_ids": [
+            8,
+            9
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 1.444
+        },
+        {
+          "case_id": "L010",
+          "ranked_article_ids": [
+            22,
+            9,
+            36,
+            19,
             1
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 1.446
+        },
+        {
+          "case_id": "L011",
+          "ranked_article_ids": [
+            19,
+            16,
+            18,
+            25,
+            2
+          ],
+          "relevant_article_ids": [
+            10
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 1.488
+        },
+        {
+          "case_id": "L012",
+          "ranked_article_ids": [
+            31,
+            33,
+            9,
+            19,
+            32
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 1.441
+        }
+      ]
+    },
+    {
+      "name": "hash_mixed",
+      "status": "completed",
+      "metrics": {
+        "recall_at_5": 0.6806,
+        "mrr": 0.5708,
+        "hit_at_1": 0.4583,
+        "hit_at_3": 0.6667,
+        "hit_at_5": 0.7917,
+        "precision_at_5": 0.175,
+        "average_latency_ms": 8.657,
+        "p95_latency_ms": 9.298
+      },
+      "cases": [
+        {
+          "case_id": "C001",
+          "ranked_article_ids": [
+            33,
+            4,
+            35,
+            5,
+            3
+          ],
+          "relevant_article_ids": [
+            3,
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.4,
+          "latency_ms": 16.516
+        },
+        {
+          "case_id": "C002",
+          "ranked_article_ids": [
+            2,
+            19,
+            21,
+            12,
+            18
+          ],
+          "relevant_article_ids": [
+            2,
+            3
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.473
+        },
+        {
+          "case_id": "C003",
+          "ranked_article_ids": [
+            5,
+            4,
+            28,
+            22,
+            24
+          ],
+          "relevant_article_ids": [
+            5
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.228
+        },
+        {
+          "case_id": "C004",
+          "ranked_article_ids": [
+            4,
+            36,
+            12,
+            32,
+            5
+          ],
+          "relevant_article_ids": [
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.207
+        },
+        {
+          "case_id": "C005",
+          "ranked_article_ids": [
+            3,
+            1,
+            4,
+            2,
+            13
+          ],
+          "relevant_article_ids": [
+            1
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.5,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.247
+        },
+        {
+          "case_id": "C006",
+          "ranked_article_ids": [
+            18,
+            13,
+            11,
+            12,
+            16
+          ],
+          "relevant_article_ids": [
+            1,
+            3
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 8.399
+        },
+        {
+          "case_id": "C007",
+          "ranked_article_ids": [
+            2,
+            14,
+            1,
+            28,
+            18
+          ],
+          "relevant_article_ids": [
+            2
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.485
+        },
+        {
+          "case_id": "C008",
+          "ranked_article_ids": [
+            14,
+            22,
+            35,
+            3,
+            33
+          ],
+          "relevant_article_ids": [
+            3
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.25,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.23
+        },
+        {
+          "case_id": "C009",
+          "ranked_article_ids": [
+            22,
+            12,
+            23,
+            19,
+            18
+          ],
+          "relevant_article_ids": [
+            2,
+            3,
+            4
+          ],
+          "recall_at_5": 0.0,
+          "mrr": 0.0,
+          "hit_at_1": 0.0,
+          "hit_at_3": 0.0,
+          "hit_at_5": 0.0,
+          "precision_at_5": 0.0,
+          "latency_ms": 8.061
+        },
+        {
+          "case_id": "C010",
+          "ranked_article_ids": [
+            4,
+            22,
+            36,
+            24,
+            5
+          ],
+          "relevant_article_ids": [
+            4
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 7.957
+        },
+        {
+          "case_id": "C011",
+          "ranked_article_ids": [
+            5,
+            14,
+            3,
+            11,
+            4
+          ],
+          "relevant_article_ids": [
+            5
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.827
+        },
+        {
+          "case_id": "C012",
+          "ranked_article_ids": [
+            1,
+            13,
+            4,
+            33,
+            3
+          ],
+          "relevant_article_ids": [
+            1,
+            3
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.4,
+          "latency_ms": 8.39
+        },
+        {
+          "case_id": "L001",
+          "ranked_article_ids": [
+            9,
+            22,
+            6,
+            10,
+            7
+          ],
+          "relevant_article_ids": [
+            6
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.06
+        },
+        {
+          "case_id": "L002",
+          "ranked_article_ids": [
+            6,
+            7,
+            10,
+            15,
+            16
+          ],
+          "relevant_article_ids": [
+            10
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.194
+        },
+        {
+          "case_id": "L003",
+          "ranked_article_ids": [
+            7,
+            19,
+            10,
+            18,
+            16
+          ],
+          "relevant_article_ids": [
+            6,
+            7
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 8.409
+        },
+        {
+          "case_id": "L004",
+          "ranked_article_ids": [
+            8,
+            21,
+            23,
+            22,
+            26
+          ],
+          "relevant_article_ids": [
+            8,
+            9
+          ],
+          "recall_at_5": 0.5,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 7.976
+        },
+        {
+          "case_id": "L005",
+          "ranked_article_ids": [
+            9,
+            22,
+            10,
+            19,
+            23
+          ],
+          "relevant_article_ids": [
+            9
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
+          "hit_at_3": 1.0,
+          "hit_at_5": 1.0,
+          "precision_at_5": 0.2,
+          "latency_ms": 7.948
+        },
+        {
+          "case_id": "L006",
+          "ranked_article_ids": [
+            22,
+            19,
+            7,
+            6,
+            25
           ],
           "relevant_article_ids": [
             6
@@ -904,586 +1411,79 @@
           "hit_at_3": 0.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.154
+          "latency_ms": 9.298
         },
         {
           "case_id": "L007",
           "ranked_article_ids": [
-            7,
             10,
-            6,
+            7,
             9,
-            4
+            16,
+            6
           ],
           "relevant_article_ids": [
             10
           ],
           "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
+          "mrr": 1.0,
+          "hit_at_1": 1.0,
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 0.161
+          "latency_ms": 9.253
         },
         {
           "case_id": "L008",
           "ranked_article_ids": [
+            23,
             10,
-            7,
-            8,
             9,
-            6
+            21,
+            8
           ],
           "relevant_article_ids": [
             6,
             7,
             8
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.6,
-          "latency_ms": 0.157
-        },
-        {
-          "case_id": "L009",
-          "ranked_article_ids": [
-            9,
-            8,
-            10,
-            6,
-            4
-          ],
-          "relevant_article_ids": [
-            8,
-            9
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 0.247
-        },
-        {
-          "case_id": "L010",
-          "ranked_article_ids": [
-            9,
-            1,
-            5,
-            10,
-            3
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 0.0,
-          "mrr": 0.0,
-          "hit_at_1": 0.0,
-          "hit_at_3": 0.0,
-          "hit_at_5": 0.0,
-          "precision_at_5": 0.0,
-          "latency_ms": 0.258
-        },
-        {
-          "case_id": "L011",
-          "ranked_article_ids": [
-            2,
-            4,
-            9,
-            8,
-            7
-          ],
-          "relevant_article_ids": [
-            10
-          ],
-          "recall_at_5": 0.0,
-          "mrr": 0.0,
-          "hit_at_1": 0.0,
-          "hit_at_3": 0.0,
-          "hit_at_5": 0.0,
-          "precision_at_5": 0.0,
-          "latency_ms": 0.172
-        },
-        {
-          "case_id": "L012",
-          "ranked_article_ids": [
-            9,
-            4,
-            10,
-            5,
-            2
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 0.0,
-          "mrr": 0.0,
-          "hit_at_1": 0.0,
-          "hit_at_3": 0.0,
-          "hit_at_5": 0.0,
-          "precision_at_5": 0.0,
-          "latency_ms": 0.265
-        }
-      ]
-    },
-    {
-      "name": "hash_mixed",
-      "status": "completed",
-      "metrics": {
-        "recall_at_5": 0.8264,
-        "mrr": 0.7361,
-        "hit_at_1": 0.625,
-        "hit_at_3": 0.875,
-        "hit_at_5": 0.875,
-        "precision_at_5": 0.2417,
-        "average_latency_ms": 3.125,
-        "p95_latency_ms": 4.466
-      },
-      "cases": [
-        {
-          "case_id": "C001",
-          "ranked_article_ids": [
-            4,
-            5,
-            3,
-            2,
-            9
-          ],
-          "relevant_article_ids": [
-            3,
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 13.546
-        },
-        {
-          "case_id": "C002",
-          "ranked_article_ids": [
-            2,
-            4,
-            7,
-            3,
-            9
-          ],
-          "relevant_article_ids": [
-            2,
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 4.466
-        },
-        {
-          "case_id": "C003",
-          "ranked_article_ids": [
-            5,
-            4,
-            3,
-            9,
-            6
-          ],
-          "relevant_article_ids": [
-            5
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 3.72
-        },
-        {
-          "case_id": "C004",
-          "ranked_article_ids": [
-            4,
-            5,
-            3,
-            6,
-            1
-          ],
-          "relevant_article_ids": [
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 3.478
-        },
-        {
-          "case_id": "C005",
-          "ranked_article_ids": [
-            3,
-            1,
-            4,
-            2,
-            10
-          ],
-          "relevant_article_ids": [
-            1
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 3.294
-        },
-        {
-          "case_id": "C006",
-          "ranked_article_ids": [
-            4,
-            3,
-            5,
-            9,
-            7
-          ],
-          "relevant_article_ids": [
-            1,
-            3
-          ],
-          "recall_at_5": 0.5,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 3.233
-        },
-        {
-          "case_id": "C007",
-          "ranked_article_ids": [
-            2,
-            1,
-            4,
-            3,
-            7
-          ],
-          "relevant_article_ids": [
-            2
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.836
-        },
-        {
-          "case_id": "C008",
-          "ranked_article_ids": [
-            3,
-            1,
-            4,
-            5,
-            2
-          ],
-          "relevant_article_ids": [
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.493
-        },
-        {
-          "case_id": "C009",
-          "ranked_article_ids": [
-            2,
-            7,
-            9,
-            8,
-            5
-          ],
-          "relevant_article_ids": [
-            2,
-            3,
-            4
           ],
           "recall_at_5": 0.3333333333333333,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.605
-        },
-        {
-          "case_id": "C010",
-          "ranked_article_ids": [
-            4,
-            5,
-            1,
-            9,
-            3
-          ],
-          "relevant_article_ids": [
-            4
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.489
-        },
-        {
-          "case_id": "C011",
-          "ranked_article_ids": [
-            5,
-            3,
-            4,
-            1,
-            6
-          ],
-          "relevant_article_ids": [
-            5
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.328
-        },
-        {
-          "case_id": "C012",
-          "ranked_article_ids": [
-            1,
-            4,
-            3,
-            2,
-            6
-          ],
-          "relevant_article_ids": [
-            1,
-            3
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 2.283
-        },
-        {
-          "case_id": "L001",
-          "ranked_article_ids": [
-            9,
-            6,
-            10,
-            7,
-            8
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
+          "mrr": 0.2,
           "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
+          "hit_at_3": 0.0,
           "hit_at_5": 1.0,
           "precision_at_5": 0.2,
-          "latency_ms": 2.227
-        },
-        {
-          "case_id": "L002",
-          "ranked_article_ids": [
-            6,
-            7,
-            10,
-            9,
-            4
-          ],
-          "relevant_article_ids": [
-            10
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.3333333333333333,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.247
-        },
-        {
-          "case_id": "L003",
-          "ranked_article_ids": [
-            7,
-            10,
-            6,
-            8,
-            9
-          ],
-          "relevant_article_ids": [
-            6,
-            7
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 2.211
-        },
-        {
-          "case_id": "L004",
-          "ranked_article_ids": [
-            8,
-            7,
-            9,
-            6,
-            5
-          ],
-          "relevant_article_ids": [
-            8,
-            9
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 2.21
-        },
-        {
-          "case_id": "L005",
-          "ranked_article_ids": [
-            9,
-            10,
-            6,
-            8,
-            7
-          ],
-          "relevant_article_ids": [
-            9
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.426
-        },
-        {
-          "case_id": "L006",
-          "ranked_article_ids": [
-            7,
-            6,
-            10,
-            9,
-            1
-          ],
-          "relevant_article_ids": [
-            6
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.5,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.307
-        },
-        {
-          "case_id": "L007",
-          "ranked_article_ids": [
-            10,
-            7,
-            9,
-            6,
-            4
-          ],
-          "relevant_article_ids": [
-            10
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.2,
-          "latency_ms": 2.252
-        },
-        {
-          "case_id": "L008",
-          "ranked_article_ids": [
-            10,
-            9,
-            8,
-            7,
-            6
-          ],
-          "relevant_article_ids": [
-            6,
-            7,
-            8
-          ],
-          "recall_at_5": 1.0,
-          "mrr": 0.3333333333333333,
-          "hit_at_1": 0.0,
-          "hit_at_3": 1.0,
-          "hit_at_5": 1.0,
-          "precision_at_5": 0.6,
-          "latency_ms": 2.382
+          "latency_ms": 8.059
         },
         {
           "case_id": "L009",
           "ranked_article_ids": [
+            23,
+            21,
             9,
-            8,
-            6,
-            10,
-            1
+            26,
+            22
           ],
           "relevant_article_ids": [
             8,
             9
           ],
-          "recall_at_5": 1.0,
-          "mrr": 1.0,
-          "hit_at_1": 1.0,
+          "recall_at_5": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_1": 0.0,
           "hit_at_3": 1.0,
           "hit_at_5": 1.0,
-          "precision_at_5": 0.4,
-          "latency_ms": 2.44
+          "precision_at_5": 0.2,
+          "latency_ms": 8.636
         },
         {
           "case_id": "L010",
           "ranked_article_ids": [
+            22,
             9,
-            1,
-            10,
-            5,
-            3
+            36,
+            19,
+            1
           ],
           "relevant_article_ids": [
             6
@@ -1494,16 +1494,16 @@
           "hit_at_3": 0.0,
           "hit_at_5": 0.0,
           "precision_at_5": 0.0,
-          "latency_ms": 2.515
+          "latency_ms": 7.851
         },
         {
           "case_id": "L011",
           "ranked_article_ids": [
+            19,
+            16,
             2,
-            4,
-            1,
-            9,
-            7
+            24,
+            25
           ],
           "relevant_article_ids": [
             10
@@ -1514,16 +1514,16 @@
           "hit_at_3": 0.0,
           "hit_at_5": 0.0,
           "precision_at_5": 0.0,
-          "latency_ms": 2.538
+          "latency_ms": 8.163
         },
         {
           "case_id": "L012",
           "ranked_article_ids": [
             9,
-            4,
-            10,
-            5,
-            8
+            16,
+            19,
+            33,
+            31
           ],
           "relevant_article_ids": [
             6
@@ -1534,7 +1534,7 @@
           "hit_at_3": 0.0,
           "hit_at_5": 0.0,
           "precision_at_5": 0.0,
-          "latency_ms": 2.472
+          "latency_ms": 7.904
         }
       ]
     },
@@ -1547,8 +1547,8 @@
   "system": {
     "workflow_success_rate": 1.0,
     "citation_integrity_rate": 1.0,
-    "average_latency_ms": 13.652,
-    "p95_latency_ms": 14.772,
+    "average_latency_ms": 20.448,
+    "p95_latency_ms": 22.315,
     "model_api_calls": 0,
     "estimated_model_cost_cny": 0.0,
     "completed_review_nodes": 24

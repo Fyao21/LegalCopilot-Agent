@@ -1,10 +1,18 @@
 import json
+from datetime import date
 
 from app.llm import LLMClientError, OpenAICompatibleLLM
-from app.schemas import CaseFacts, ReportDraft, ReviewedCitation
+from app.schemas import CaseFacts, ReportDraft, ReportRevision, ReviewedCitation
 
 SYSTEM_PROMPT = """你是法律分析报告写作组件。只允许使用输入中的案件事实和已审核法规，不得编造新法条、案号或事实。
-返回 JSON：title、analysis、suggestions、evidence_gaps。analysis 中引用条文时只使用 [article_id] 格式。不要输出 Markdown 代码块。"""
+返回 JSON：title、analysis、suggestions、evidence_gaps。
+suggestions 和 evidence_gaps 必须是 JSON 字符串数组，即使只有一项也必须写成 ["内容"]，不能返回普通字符串。
+analysis 中引用条文时只使用 [article_id] 格式。不要输出 Markdown 代码块。"""
+
+REVISION_SYSTEM_PROMPT = """你是法律分析报告修订组件。只能根据原报告、审核意见、案件事实和已审核引用修改报告。
+不得增加输入中不存在的事实、法条、案号或引用编号。
+返回 JSON：markdown、change_summary。markdown 必须是完整 Markdown 报告；change_summary 简要说明本次修改。
+不要输出 Markdown 代码块。"""
 
 
 def create_report_draft(
@@ -16,8 +24,8 @@ def create_report_draft(
     fallback_reason: str | None
     if llm is not None and verified:
         payload = {
-            "facts": facts.model_dump(),
-            "verified_citations": [citation.model_dump() for citation in verified],
+            "facts": facts.model_dump(mode="json"),
+            "verified_citations": [citation.model_dump(mode="json") for citation in verified],
         }
         try:
             return llm.invoke_structured(
@@ -53,11 +61,17 @@ def create_report_draft(
     return draft, fallback_reason
 
 
-def render_markdown(draft: ReportDraft, facts: CaseFacts, citations: list[ReviewedCitation]) -> str:
+def render_markdown(
+    draft: ReportDraft,
+    facts: CaseFacts,
+    citations: list[ReviewedCitation],
+    as_of_date: date | None = None,
+) -> str:
     lines = [
         f"# {draft.title}",
         "",
         "> 本报告仅用于技术演示，不构成法律意见。法规内容应以权威来源的现行有效文本为准。",
+        f"> 法规检索时点：{as_of_date.isoformat() if as_of_date else '当前日期'}。",
         "",
         "## 一、案件摘要",
         "",
@@ -89,9 +103,23 @@ def render_markdown(draft: ReportDraft, facts: CaseFacts, citations: list[Review
     if not verified:
         lines.append("当前没有通过审核的法律引用，报告结论为低置信度。")
     for citation in verified:
+        effect_label = {
+            "effective": "现行有效",
+            "amended": "已修订",
+            "repealed": "已废止（在所选历史时点有效）",
+            "legacy": "未标注",
+        }.get(citation.effect_status, citation.effect_status)
+        validity = (
+            f"{citation.effective_from.isoformat() if citation.effective_from else '未标注'}"
+            f" 至 {citation.effective_to.isoformat() if citation.effective_to else '长期有效'}"
+        )
         lines.extend(
             [
                 f"### [{citation.article_id}] {citation.law_name} {citation.article_number}",
+                "",
+                f"- 法规版本：{citation.version_label}",
+                f"- 当前效力状态：{effect_label}",
+                f"- 版本适用区间：{validity}",
                 "",
                 citation.excerpt,
                 "",
@@ -100,3 +128,49 @@ def render_markdown(draft: ReportDraft, facts: CaseFacts, citations: list[Review
             ]
         )
     return "\n".join(lines).strip() + "\n"
+
+
+def revise_report_markdown(
+    markdown: str,
+    comment: str,
+    version_number: int,
+    facts: CaseFacts,
+    citations: list[ReviewedCitation],
+    llm: OpenAICompatibleLLM | None,
+) -> tuple[ReportRevision, str | None]:
+    if llm is not None:
+        payload = {
+            "original_markdown": markdown,
+            "review_comment": comment,
+            "facts": facts.model_dump(mode="json"),
+            "verified_citations": [
+                citation.model_dump(mode="json") for citation in citations if citation.verified
+            ],
+        }
+        try:
+            revision = llm.invoke_structured(
+                REVISION_SYSTEM_PROMPT,
+                json.dumps(payload, ensure_ascii=False),
+                ReportRevision,
+            )
+            return revision, None
+        except LLMClientError as error:
+            fallback_reason = f"{error.code}: {error}"
+    else:
+        fallback_reason = None
+
+    review_note = (
+        f"> **第 {version_number} 版审批修改说明：** {comment}\n"
+        ">\n"
+        "> 离线模式不会自行补充新事实；请由审核人继续核对正文是否充分落实修改意见。\n\n"
+    )
+    lines = markdown.splitlines()
+    insert_at = 2 if lines and lines[0].startswith("# ") else 0
+    revised_lines = [*lines[:insert_at], "", review_note.rstrip(), "", *lines[insert_at:]]
+    return (
+        ReportRevision(
+            markdown="\n".join(revised_lines).strip() + "\n",
+            change_summary=f"根据审批意见生成第 {version_number} 版：{comment[:200]}",
+        ),
+        fallback_reason,
+    )

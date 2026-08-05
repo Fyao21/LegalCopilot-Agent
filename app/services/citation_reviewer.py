@@ -29,15 +29,19 @@ def review_citations(
             and article.law_name == citation.law_name
             and article.article_number == citation.article_number
             and article.content == citation.excerpt
+            and (citation.law_version_id is None or article.law_version_id == citation.law_version_id)
         )
         support_overlap = (
             len(query_tokens & set(tokenize(article.content))) if article and query_tokens else 0
         )
         verified = exact and (citation.score >= 0.03 or support_overlap > 0)
         if not exact:
-            status, reason = "rejected", "引用字段与知识库原文不一致"
+            status, reason = "rejected", "引用字段、法规版本或知识库原文不一致"
         elif verified:
-            status, reason = "verified", "条文 ID、名称、条号和原文一致，且与查询存在检索关联"
+            status, reason = (
+                "verified",
+                "条文 ID、名称、条号、法规版本和原文一致，且与查询存在检索关联",
+            )
         else:
             status, reason = "low_confidence", "条文真实，但与当前问题的支撑关系较弱"
         reviewed.append(
