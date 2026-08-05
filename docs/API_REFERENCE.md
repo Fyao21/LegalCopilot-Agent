@@ -164,7 +164,7 @@ python -m json.tool docs\openapi.json > $null
 POST /api/v1/runs
   ↓ 响应 trace_id + monitoring_url
 GET /api/v1/runs/{run_id}
-  ↓ 状态包含 total_duration_ms、Token、estimated_cost_usd、fallback_count
+  ↓ 状态包含 total_duration_ms、Token、estimated_cost_cny、fallback_count
 GET /api/v1/runs/{run_id}/monitoring
   ↓ 单次 Trace、节点 Span、模型、费用、重试和降级原因
 GET /api/v1/monitoring/overview?days=7
@@ -172,7 +172,7 @@ GET /api/v1/monitoring/overview?days=7
 ```
 
 - `days` 允许 1～90，越界返回 422；
-- 费用是环境变量单价乘 Token 的估算值，不是服务商账单；
+- 费用是人民币环境变量单价乘 Token 的估算值，不是服务商账单；
 - 离线模式 Token 和费用为 0 是正确结果；
 - Trace 属性只允许低敏元数据，不返回案件全文、Prompt 或密钥；
 - 无 Trace 的历史任务单次监控返回 404，不影响原状态与报告接口。

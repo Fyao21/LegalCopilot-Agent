@@ -1567,7 +1567,7 @@ GET {{baseUrl}}/api/v1/evaluations/f06cb7b3-e04b-4a61-85f8-fdc53044c163
   "total_duration_ms": 8421,
   "input_tokens": 3560,
   "output_tokens": 1024,
-  "estimated_cost_usd": 0.0032,
+  "estimated_cost_cny": 0.005608,
   "fallback_count": 0,
   "retry_count": 0,
   "slowest_node": "write_report",
@@ -1586,7 +1586,7 @@ GET {{baseUrl}}/api/v1/evaluations/f06cb7b3-e04b-4a61-85f8-fdc53044c163
       "model": "deepseek-v4-flash",
       "input_tokens": 720,
       "output_tokens": 210,
-      "estimated_cost_usd": 0.00062,
+      "estimated_cost_cny": 0.00114,
       "retry_count": 0,
       "fallback_reason": null,
       "error_code": null,
@@ -1609,7 +1609,7 @@ GET {{baseUrl}}/api/v1/evaluations/f06cb7b3-e04b-4a61-85f8-fdc53044c163
 | `trace_id` | 同一次 HTTP 创建请求和 Agent 工作流的关联 ID |
 | `total_duration_ms` | 当前 Trace 中 `agent.invoke` 根 Span 的累计耗时 |
 | `input_tokens` / `output_tokens` | Chat 与 Embedding 计量 Span 的累计 Token |
-| `estimated_cost_usd` | 按运行时环境变量单价估算；默认单价为 0 |
+| `estimated_cost_cny` | 按运行时人民币环境变量单价估算；默认单价为 0 |
 | `fallback_count` | 出现 `fallback_reason` 的模型或 Embedding Span 数 |
 | `retry_count` | LangGraph 补充检索重试次数 |
 | `slowest_node` | 当前保存的 Agent 节点 Span 中耗时最长的节点 |
@@ -1644,7 +1644,7 @@ GET {{baseUrl}}/api/v1/evaluations/f06cb7b3-e04b-4a61-85f8-fdc53044c163
   "p95_duration_ms": 13200,
   "total_input_tokens": 48200,
   "total_output_tokens": 12600,
-  "total_estimated_cost_usd": 0.0482,
+  "total_estimated_cost_cny": 0.0842,
   "node_metrics": [
     {
       "node": "analyze_case",
@@ -1663,7 +1663,7 @@ GET {{baseUrl}}/api/v1/evaluations/f06cb7b3-e04b-4a61-85f8-fdc53044c163
       "total_duration_ms": 8421,
       "input_tokens": 3560,
       "output_tokens": 1024,
-      "estimated_cost_usd": 0.0032,
+      "estimated_cost_cny": 0.005608,
       "fallback_count": 0,
       "retry_count": 0,
       "created_at": "2026-08-01T10:00:00Z"

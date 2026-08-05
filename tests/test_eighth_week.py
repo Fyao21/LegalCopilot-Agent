@@ -10,7 +10,7 @@ from app.database import SessionLocal
 from app.llm.client import OpenAICompatibleLLM
 from app.main import app
 from app.models import AgentRun
-from app.services.observability import estimate_cost_usd, sanitize_span_attributes
+from app.services.observability import estimate_cost_cny, sanitize_span_attributes
 
 
 class _UsageResult(BaseModel):
@@ -50,13 +50,16 @@ class EighthWeekObservabilityTests(unittest.TestCase):
         status = self.status_response.json()
         self.assertEqual(status["trace_id"], self.created["trace_id"])
         self.assertIn("total_duration_ms", status)
-        self.assertIn("estimated_cost_usd", status)
+        self.assertIn("estimated_cost_cny", status)
+        self.assertNotIn("estimated_cost_usd", status)
         self.assertIn("fallback_count", status)
 
     def test_run_monitoring_contains_root_nodes_and_embedding_span(self) -> None:
         self.assertEqual(self.monitoring_response.status_code, 200)
         detail = self.monitoring_response.json()
         self.assertEqual(detail["trace_id"], self.created["trace_id"])
+        self.assertIn("estimated_cost_cny", detail)
+        self.assertNotIn("estimated_cost_usd", detail)
         names = {span["name"] for span in detail["spans"]}
         self.assertIn("agent.invoke", names)
         self.assertIn("agent.analyze_case", names)
@@ -98,13 +101,13 @@ class EighthWeekObservabilityTests(unittest.TestCase):
 
     def test_cost_estimation_uses_configured_per_million_rates(self) -> None:
         settings = SimpleNamespace(
-            llm_input_cost_per_million_usd=2.0,
-            llm_output_cost_per_million_usd=6.0,
-            embedding_cost_per_million_usd=0.5,
+            llm_input_cost_per_million_cny=2.0,
+            llm_output_cost_per_million_cny=6.0,
+            embedding_cost_per_million_cny=0.5,
         )
         with patch("app.services.observability.get_settings", return_value=settings):
-            chat_cost = estimate_cost_usd(input_tokens=1_000, output_tokens=500)
-            embedding_cost = estimate_cost_usd(input_tokens=2_000, operation="embedding")
+            chat_cost = estimate_cost_cny(input_tokens=1_000, output_tokens=500)
+            embedding_cost = estimate_cost_cny(input_tokens=2_000, operation="embedding")
         self.assertEqual(chat_cost, 0.005)
         self.assertEqual(embedding_cost, 0.001)
 

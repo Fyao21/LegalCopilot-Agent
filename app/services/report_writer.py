@@ -24,8 +24,8 @@ def create_report_draft(
     fallback_reason: str | None
     if llm is not None and verified:
         payload = {
-            "facts": facts.model_dump(),
-            "verified_citations": [citation.model_dump() for citation in verified],
+            "facts": facts.model_dump(mode="json"),
+            "verified_citations": [citation.model_dump(mode="json") for citation in verified],
         }
         try:
             return llm.invoke_structured(
@@ -142,8 +142,10 @@ def revise_report_markdown(
         payload = {
             "original_markdown": markdown,
             "review_comment": comment,
-            "facts": facts.model_dump(),
-            "verified_citations": [citation.model_dump() for citation in citations if citation.verified],
+            "facts": facts.model_dump(mode="json"),
+            "verified_citations": [
+                citation.model_dump(mode="json") for citation in citations if citation.verified
+            ],
         }
         try:
             revision = llm.invoke_structured(

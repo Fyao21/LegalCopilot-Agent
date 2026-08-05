@@ -133,6 +133,7 @@ function App() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const approvalActionIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     getHealth()
@@ -192,6 +193,13 @@ function App() {
         } else if (["waiting_for_user", "waiting_for_approval"].includes(next.status)) {
           const pending = await getPendingAction(runId);
           if (!cancelled) {
+            if (
+              pending.action?.type === "approval"
+              && approvalActionIdRef.current !== pending.action.action_id
+            ) {
+              approvalActionIdRef.current = pending.action.action_id;
+              setApprovalComment("");
+            }
             setPendingAction(pending);
             if (pending.action?.type === "clarification") {
               setClarificationAnswers((current) => {
@@ -212,7 +220,6 @@ function App() {
                 setReport(draft);
                 setCitations(nextCitations);
                 setReportVersions(nextVersions);
-                setApprovalComment("");
               }
             }
           }
@@ -283,6 +290,7 @@ function App() {
     setStatus(null);
     setPendingAction(null);
     setClarificationAnswers({});
+    approvalActionIdRef.current = null;
     setApprovalComment("");
     setReport(null);
     setReportVersions([]);
@@ -312,7 +320,7 @@ function App() {
         total_duration_ms: 0,
         input_tokens: 0,
         output_tokens: 0,
-        estimated_cost_usd: 0,
+        estimated_cost_cny: 0,
         fallback_count: 0,
         facts: null,
         traces: [],
@@ -334,6 +342,7 @@ function App() {
     setStatus(null);
     setPendingAction(null);
     setClarificationAnswers({});
+    approvalActionIdRef.current = null;
     setApprovalComment("");
     setReport(null);
     setReportVersions([]);
@@ -401,6 +410,7 @@ function App() {
         state_version: result.state_version,
         current_node: "approve_report"
       } : current);
+      setApprovalComment("");
       setPendingAction(null);
       setReport(null);
       setSelectedVersion(null);

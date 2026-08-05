@@ -42,8 +42,8 @@ function formatDuration(value: number): string {
 }
 
 function formatCost(value: number): string {
-  if (value === 0) return "$0.000000";
-  return `$${value.toFixed(6)}`;
+  if (value === 0) return "¥0.000000";
+  return `¥${value.toFixed(6)}`;
 }
 
 function formatPercent(value: number): string {
@@ -150,7 +150,7 @@ export default function MonitoringPage({
               <article className={overview.fallback_rate > 0 ? "metric-warning" : ""}><span>降级率</span><strong>{formatPercent(overview.fallback_rate)}</strong><small>至少一个模型或向量回退</small></article>
               <article><span>平均 / P95</span><strong>{formatDuration(overview.average_duration_ms)}</strong><small>P95 {formatDuration(overview.p95_duration_ms)}</small></article>
               <article><span>累计 Token</span><strong>{overview.total_input_tokens + overview.total_output_tokens}</strong><small>输入 {overview.total_input_tokens} · 输出 {overview.total_output_tokens}</small></article>
-              <article><span>估算费用</span><strong>{formatCost(overview.total_estimated_cost_usd)}</strong><small>按环境变量中的单价估算</small></article>
+              <article><span>估算费用</span><strong>{formatCost(overview.total_estimated_cost_cny)}</strong><small>人民币 · 按环境变量中的单价估算</small></article>
             </div>
 
             <div className="monitoring-grid">
@@ -227,7 +227,7 @@ export default function MonitoringPage({
                 <div><span>最慢节点</span><strong>{nodeLabels[detail.slowest_node || ""] || detail.slowest_node || "暂无"}</strong><small>{formatDuration(detail.slowest_node_duration_ms)}</small></div>
                 <div><span>模型</span><strong>{detail.model || "未调用 LLM"}</strong><small>{detail.mode}</small></div>
                 <div><span>Token</span><strong>{detail.input_tokens + detail.output_tokens}</strong><small>输入 {detail.input_tokens} · 输出 {detail.output_tokens}</small></div>
-                <div><span>费用</span><strong>{formatCost(detail.estimated_cost_usd)}</strong><small>{detail.fallback_count} 次降级 · {detail.retry_count} 次工作流重试</small></div>
+                <div><span>费用</span><strong>{formatCost(detail.estimated_cost_cny)}</strong><small>人民币 · {detail.fallback_count} 次降级 · {detail.retry_count} 次工作流重试</small></div>
               </div>
               <ol className="span-waterfall">
                 {detail.spans.map((span) => (

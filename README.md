@@ -33,7 +33,7 @@
 - 提供从 10 个可核验官方页面生成的 200 个跨领域法规 TXT 和来源清单；
 - 36 条合同、劳动和消费者权益教学法规，来源指向国家法律法规数据库或中国人大网；
 - 24 条脱敏评测集，输出案件抽取、Recall@5、MRR、Hit@K、延迟和工作流指标；
-- Ruff、mypy、82 项测试、前端生产构建与 GitHub Actions CI；
+- Ruff、mypy、84 项测试、前端生产构建与 GitHub Actions CI；
 - SQLite 零依赖启动，同时保留 Docker Compose 与生产数据库迁移路径。
 
 ## 重点工程挑战
@@ -190,7 +190,7 @@ curl.exe -X POST "http://127.0.0.1:8000/api/v1/runs" `
 
 查询 `/api/v1/runs/1` 可看到 `execution_engine=rules|llm|fallback` 和实际 `model`。完整接口见[逐接口文档](docs/API_GUIDE_DETAILED.md)与[Apifox OpenAPI](docs/openapi.json)。
 
-查询 `/api/v1/runs/1/monitoring` 可定位单次 Trace；查询 `/api/v1/monitoring/overview?days=7` 可查看运行数、成功率、降级率、平均/P95 耗时、Token 与费用汇总。费用单价默认是 0，需在 `.env` 按模型服务商实际价格配置。
+查询 `/api/v1/runs/1/monitoring` 可定位单次 Trace；查询 `/api/v1/monitoring/overview?days=7` 可查看运行数、成功率、降级率、平均/P95 耗时、Token 与费用汇总。费用统一以人民币估算，单价默认是 0，需在 `.env` 按模型服务商实际价格配置。
 
 如果任务返回 `waiting_for_user`，先查询并回答追问：
 
@@ -253,7 +253,7 @@ cd frontend
 pnpm run build
 ```
 
-测试入口会强制设置离线模式并移除模型 Key，不会调用真实 DeepSeek。82 项测试覆盖正常 API、损坏文件、超大文件、MIME 伪装、恶意文件名、提示/SQL 注入文本、模型超时、非法 JSON、重复提交、SQLite 锁重试、法规日期边界、废止版本排除、报告版本引用持久化，以及 Trace、Span、监控聚合、Token/费用和遥测隐私白名单。
+测试入口会强制设置离线模式并移除模型 Key，不会调用真实 DeepSeek。84 项测试覆盖正常 API、损坏文件、超大文件、MIME 伪装、恶意文件名、提示/SQL 注入文本、模型超时、非法 JSON、重复提交、SQLite 锁重试、法规日期边界、废止版本排除、报告版本引用持久化、带日期引用的模型报告生成，以及 Trace、Span、监控聚合、Token/人民币费用和遥测隐私白名单。
 
 ## 项目结构
 

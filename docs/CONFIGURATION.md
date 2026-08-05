@@ -199,28 +199,38 @@ SQLite 模式下，LangGraph checkpoint 与业务表共用 `data/legal_copilot.d
 ```env
 OBSERVABILITY_ENABLED=true
 TELEMETRY_SERVICE_NAME=legal-copilot-agent
-LLM_INPUT_COST_PER_1M_USD=0
-LLM_OUTPUT_COST_PER_1M_USD=0
-EMBEDDING_COST_PER_1M_USD=0
+LLM_INPUT_COST_PER_1M_CNY=0
+LLM_OUTPUT_COST_PER_1M_CNY=0
+EMBEDDING_COST_PER_1M_CNY=0
 ```
 
 | 变量 | 默认值 | 作用 |
 |---|---:|---|
 | `OBSERVABILITY_ENABLED` | `true` | 是否创建 OpenTelemetry Span 和本地监控记录 |
 | `TELEMETRY_SERVICE_NAME` | `legal-copilot-agent` | OpenTelemetry Resource 的服务名 |
-| `LLM_INPUT_COST_PER_1M_USD` | `0` | Chat 输入每百万 Token 美元单价 |
-| `LLM_OUTPUT_COST_PER_1M_USD` | `0` | Chat 输出每百万 Token 美元单价 |
-| `EMBEDDING_COST_PER_1M_USD` | `0` | Embedding 输入每百万 Token 美元单价 |
+| `LLM_INPUT_COST_PER_1M_CNY` | `0` | Chat 输入每百万 Token 人民币单价 |
+| `LLM_OUTPUT_COST_PER_1M_CNY` | `0` | Chat 输出每百万 Token 人民币单价 |
+| `EMBEDDING_COST_PER_1M_CNY` | `0` | Embedding 输入每百万 Token 人民币单价 |
 
 注意：
 
 1. 单价必须查询你实际使用的服务商和模型，文档不提供会过期的价格；
-2. 默认 0 表示继续统计 Token，但费用显示 `$0.000000`；
+2. 默认 0 表示继续统计 Token，但费用显示 `¥0.000000`；
 3. 单价只影响新 Span，修改配置不会重算历史运行；
 4. 服务商返回 `usage` 时使用真实计数；没有 usage 时使用代码中的明确近似值；
 5. 监控数据写入 `agent_runs` 和 `agent_run_spans`，不需要 Redis、MySQL 或独立监控服务器；
 6. 当前未配置 OTLP Exporter，所以不会自动把数据发送到云端；
 7. 关闭 `OBSERVABILITY_ENABLED` 适合特殊本地调试，但会导致新任务没有完整监控数据，不建议用于演示。
+
+本机使用 `deepseek-v4-flash` 与 `text-embedding-v4` 时，可根据服务商实际报价配置。按用户提供的 2026-08-01 报价、对输入采用保守的“缓存未命中”单价：
+
+```env
+LLM_INPUT_COST_PER_1M_CNY=1
+LLM_OUTPUT_COST_PER_1M_CNY=2
+EMBEDDING_COST_PER_1M_CNY=0.5
+```
+
+缓存命中输入单价与未命中不同。当前版本没有单独统计缓存命中 Token，因此使用未命中价格作为偏保守估算。
 
 允许进入 Span 的属性采用固定白名单，只包含任务/线程 ID、模式、节点、状态、provider/model、Token、候选数、审核数、重试与降级原因。案件全文、上传材料、Prompt、API Key、认证头和密码都不会作为 Span 属性保存。
 

@@ -77,7 +77,7 @@ export interface RunStatus {
   total_duration_ms: number;
   input_tokens: number;
   output_tokens: number;
-  estimated_cost_usd: number;
+  estimated_cost_cny: number;
   fallback_count: number;
   facts: CaseFacts | null;
   traces: NodeTrace[];
@@ -99,7 +99,7 @@ export interface MonitoringSpan {
   model: string | null;
   input_tokens: number;
   output_tokens: number;
-  estimated_cost_usd: number;
+  estimated_cost_cny: number;
   retry_count: number;
   fallback_reason: string | null;
   error_code: string | null;
@@ -117,7 +117,7 @@ export interface RunMonitoringDetail {
   total_duration_ms: number;
   input_tokens: number;
   output_tokens: number;
-  estimated_cost_usd: number;
+  estimated_cost_cny: number;
   fallback_count: number;
   retry_count: number;
   slowest_node: string | null;
@@ -143,7 +143,7 @@ export interface MonitoringRunSummary {
   total_duration_ms: number;
   input_tokens: number;
   output_tokens: number;
-  estimated_cost_usd: number;
+  estimated_cost_cny: number;
   fallback_count: number;
   retry_count: number;
   created_at: string | null;
@@ -158,7 +158,7 @@ export interface MonitoringOverview {
   p95_duration_ms: number;
   total_input_tokens: number;
   total_output_tokens: number;
-  total_estimated_cost_usd: number;
+  total_estimated_cost_cny: number;
   node_metrics: MonitoringNodeMetric[];
   recent_runs: MonitoringRunSummary[];
 }

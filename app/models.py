@@ -134,7 +134,9 @@ class AgentRun(Base):
     total_duration_ms: Mapped[int] = mapped_column(Integer, default=0)
     input_tokens: Mapped[int] = mapped_column(Integer, default=0)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    # Legacy compatibility only. New APIs and calculations use estimated_cost_cny.
     estimated_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    estimated_cost_cny: Mapped[float] = mapped_column(Float, default=0.0)
     fallback_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -161,7 +163,9 @@ class AgentRunSpan(Base):
     model: Mapped[str | None] = mapped_column(String(200), nullable=True)
     input_tokens: Mapped[int] = mapped_column(Integer, default=0)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    # Keep writing zero so databases created before the CNY migration remain insertable.
     estimated_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    estimated_cost_cny: Mapped[float] = mapped_column(Float, default=0.0)
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     fallback_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
     error_code: Mapped[str | None] = mapped_column(String(100), nullable=True)

@@ -40,9 +40,14 @@ def ensure_runtime_schema(engine: Engine) -> None:
             "total_duration_ms": "INTEGER NOT NULL DEFAULT 0",
             "input_tokens": "INTEGER NOT NULL DEFAULT 0",
             "output_tokens": "INTEGER NOT NULL DEFAULT 0",
-            "estimated_cost_usd": "FLOAT NOT NULL DEFAULT 0",
+            "estimated_cost_cny": "FLOAT NOT NULL DEFAULT 0",
             "fallback_count": "INTEGER NOT NULL DEFAULT 0",
         },
+    )
+    _add_missing_columns(
+        engine,
+        "agent_run_spans",
+        {"estimated_cost_cny": "FLOAT NOT NULL DEFAULT 0"},
     )
     _add_missing_columns(engine, "case_runs", {"as_of_date": "DATE"})
     _add_missing_columns(engine, "legal_articles", {"law_version_id": "INTEGER"})

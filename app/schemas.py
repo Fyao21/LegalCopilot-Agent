@@ -262,7 +262,7 @@ class AgentRunStatus(BaseModel):
     total_duration_ms: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
-    estimated_cost_usd: float = 0.0
+    estimated_cost_cny: float = 0.0
     fallback_count: int = 0
     facts: CaseFacts | None = None
     traces: list[NodeTrace] = Field(default_factory=list)
@@ -284,7 +284,7 @@ class MonitoringSpan(BaseModel):
     model: str | None = None
     input_tokens: int = 0
     output_tokens: int = 0
-    estimated_cost_usd: float = 0.0
+    estimated_cost_cny: float = 0.0
     retry_count: int = 0
     fallback_reason: str | None = None
     error_code: str | None = None
@@ -302,7 +302,7 @@ class RunMonitoringDetail(BaseModel):
     total_duration_ms: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
-    estimated_cost_usd: float = 0.0
+    estimated_cost_cny: float = 0.0
     fallback_count: int = 0
     retry_count: int = 0
     slowest_node: str | None = None
@@ -328,7 +328,7 @@ class MonitoringRunSummary(BaseModel):
     total_duration_ms: int
     input_tokens: int
     output_tokens: int
-    estimated_cost_usd: float
+    estimated_cost_cny: float
     fallback_count: int
     retry_count: int
     created_at: datetime | None = None
@@ -343,7 +343,7 @@ class MonitoringOverview(BaseModel):
     p95_duration_ms: float
     total_input_tokens: int
     total_output_tokens: int
-    total_estimated_cost_usd: float
+    total_estimated_cost_cny: float
     node_metrics: list[MonitoringNodeMetric] = Field(default_factory=list)
     recent_runs: list[MonitoringRunSummary] = Field(default_factory=list)
 

@@ -21,8 +21,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/examples/questions/random": {
@@ -98,8 +97,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/articles/search": {
@@ -141,8 +139,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/knowledge/articles": {
@@ -183,8 +180,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/knowledge/articles/batch": {
@@ -225,8 +221,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/knowledge/articles/normalize": {
@@ -267,8 +262,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/articles/{article_id}": {
@@ -307,8 +301,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/cases": {
@@ -346,8 +339,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs": {
@@ -385,8 +377,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}": {
@@ -425,8 +416,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/retry": {
@@ -465,8 +455,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/monitoring/overview": {
@@ -511,8 +500,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/monitoring": {
@@ -554,8 +542,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/pending-action": {
@@ -594,8 +581,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/clarifications": {
@@ -655,8 +641,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/approvals": {
@@ -716,8 +701,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/citations": {
@@ -760,8 +744,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/report": {
@@ -800,8 +783,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/report-versions": {
@@ -844,8 +826,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/report-versions/{version_number}": {
@@ -893,8 +874,7 @@
               }
             }
           }
-        },
-        "x-implementation-status": "implemented"
+        }
       }
     },
     "/api/v1/runs/{run_id}/export": {
@@ -941,157 +921,6 @@
                 }
               }
             }
-          }
-        },
-        "x-implementation-status": "implemented"
-      }
-    },
-    "/api/v1/knowledge/imports": {
-      "post": {
-        "tags": [
-          "知识库"
-        ],
-        "summary": "批量导入法规",
-        "description": "上传 JSONL、TXT 或 CSV 法规数据，创建后台导入任务。规划接口。",
-        "operationId": "createKnowledgeImport",
-        "x-implementation-status": "planned",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "file"
-                ],
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "overwrite": {
-                    "type": "boolean",
-                    "default": false
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "导入任务已创建",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportJobResponse"
-                }
-              }
-            }
-          },
-          "415": {
-            "$ref": "#/components/responses/UnsupportedMediaType"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          }
-        }
-      }
-    },
-    "/api/v1/knowledge/imports/{job_id}": {
-      "get": {
-        "tags": [
-          "知识库"
-        ],
-        "summary": "查询法规导入状态",
-        "description": "查看批量导入的成功、跳过和失败数量。规划接口。",
-        "operationId": "getKnowledgeImport",
-        "x-implementation-status": "planned",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/JobId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "导入任务状态",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportJobResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
-        }
-      }
-    },
-    "/api/v1/evaluations": {
-      "post": {
-        "tags": [
-          "评测"
-        ],
-        "summary": "创建离线评测任务",
-        "description": "使用指定数据集和检索方案启动评测。规划接口。",
-        "operationId": "createEvaluation",
-        "x-implementation-status": "planned",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EvaluationCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "评测已创建",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EvaluationStatus"
-                }
-              }
-            }
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          }
-        }
-      }
-    },
-    "/api/v1/evaluations/{evaluation_id}": {
-      "get": {
-        "tags": [
-          "评测"
-        ],
-        "summary": "查询评测状态与结果",
-        "description": "返回评测进度和已完成指标。规划接口。",
-        "operationId": "getEvaluation",
-        "x-implementation-status": "planned",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/EvaluationId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "评测状态",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EvaluationStatus"
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -1272,9 +1101,9 @@
             "title": "Output Tokens",
             "default": 0
           },
-          "estimated_cost_usd": {
+          "estimated_cost_cny": {
             "type": "number",
-            "title": "Estimated Cost Usd",
+            "title": "Estimated Cost Cny",
             "default": 0.0
           },
           "fallback_count": {
@@ -2445,9 +2274,9 @@
             "type": "integer",
             "title": "Total Output Tokens"
           },
-          "total_estimated_cost_usd": {
+          "total_estimated_cost_cny": {
             "type": "number",
-            "title": "Total Estimated Cost Usd"
+            "title": "Total Estimated Cost Cny"
           },
           "node_metrics": {
             "items": {
@@ -2474,7 +2303,7 @@
           "p95_duration_ms",
           "total_input_tokens",
           "total_output_tokens",
-          "total_estimated_cost_usd"
+          "total_estimated_cost_cny"
         ],
         "title": "MonitoringOverview"
       },
@@ -2519,9 +2348,9 @@
             "type": "integer",
             "title": "Output Tokens"
           },
-          "estimated_cost_usd": {
+          "estimated_cost_cny": {
             "type": "number",
-            "title": "Estimated Cost Usd"
+            "title": "Estimated Cost Cny"
           },
           "fallback_count": {
             "type": "integer",
@@ -2553,7 +2382,7 @@
           "total_duration_ms",
           "input_tokens",
           "output_tokens",
-          "estimated_cost_usd",
+          "estimated_cost_cny",
           "fallback_count",
           "retry_count"
         ],
@@ -2632,9 +2461,9 @@
             "title": "Output Tokens",
             "default": 0
           },
-          "estimated_cost_usd": {
+          "estimated_cost_cny": {
             "type": "number",
-            "title": "Estimated Cost Usd",
+            "title": "Estimated Cost Cny",
             "default": 0.0
           },
           "retry_count": {
@@ -3277,9 +3106,9 @@
             "title": "Output Tokens",
             "default": 0
           },
-          "estimated_cost_usd": {
+          "estimated_cost_cny": {
             "type": "number",
-            "title": "Estimated Cost Usd",
+            "title": "Estimated Cost Cny",
             "default": 0.0
           },
           "fallback_count": {

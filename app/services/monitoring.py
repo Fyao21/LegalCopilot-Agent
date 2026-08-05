@@ -54,7 +54,7 @@ def persist_span_records(db: Session, run: AgentRun, records: list[dict[str, Any
                 model=record.get("model"),
                 input_tokens=max(0, int(record.get("input_tokens") or 0)),
                 output_tokens=max(0, int(record.get("output_tokens") or 0)),
-                estimated_cost_usd=max(0.0, float(record.get("estimated_cost_usd") or 0.0)),
+                estimated_cost_cny=max(0.0, float(record.get("estimated_cost_cny") or 0.0)),
                 retry_count=max(0, int(record.get("retry_count") or 0)),
                 fallback_reason=record.get("fallback_reason"),
                 error_code=record.get("error_code"),
@@ -71,8 +71,8 @@ def persist_span_records(db: Session, run: AgentRun, records: list[dict[str, Any
     run.total_duration_ms = sum(span.duration_ms for span in root_spans)
     run.input_tokens = sum(span.input_tokens for span in metered_spans)
     run.output_tokens = sum(span.output_tokens for span in metered_spans)
-    run.estimated_cost_usd = round(
-        sum(span.estimated_cost_usd for span in metered_spans),
+    run.estimated_cost_cny = round(
+        sum(span.estimated_cost_cny for span in metered_spans),
         8,
     )
     run.fallback_count = sum(1 for span in metered_spans if span.fallback_reason)
@@ -90,7 +90,7 @@ def _span_schema(span: AgentRunSpan) -> MonitoringSpan:
         model=span.model,
         input_tokens=span.input_tokens,
         output_tokens=span.output_tokens,
-        estimated_cost_usd=span.estimated_cost_usd,
+        estimated_cost_cny=span.estimated_cost_cny,
         retry_count=span.retry_count,
         fallback_reason=span.fallback_reason,
         error_code=span.error_code,
@@ -119,7 +119,7 @@ def build_run_monitoring(db: Session, run: AgentRun) -> RunMonitoringDetail | No
         total_duration_ms=run.total_duration_ms,
         input_tokens=run.input_tokens,
         output_tokens=run.output_tokens,
-        estimated_cost_usd=run.estimated_cost_usd,
+        estimated_cost_cny=run.estimated_cost_cny,
         fallback_count=run.fallback_count,
         retry_count=run.retry_count,
         slowest_node=slowest.node if slowest else None,
@@ -174,8 +174,8 @@ def build_monitoring_overview(db: Session, days: int) -> MonitoringOverview:
         p95_duration_ms=percentile_95(durations),
         total_input_tokens=sum(run.input_tokens for run in runs),
         total_output_tokens=sum(run.output_tokens for run in runs),
-        total_estimated_cost_usd=round(
-            sum(run.estimated_cost_usd for run in runs),
+        total_estimated_cost_cny=round(
+            sum(run.estimated_cost_cny for run in runs),
             8,
         ),
         node_metrics=node_metrics,
@@ -189,7 +189,7 @@ def build_monitoring_overview(db: Session, days: int) -> MonitoringOverview:
                 total_duration_ms=run.total_duration_ms,
                 input_tokens=run.input_tokens,
                 output_tokens=run.output_tokens,
-                estimated_cost_usd=run.estimated_cost_usd,
+                estimated_cost_cny=run.estimated_cost_cny,
                 fallback_count=run.fallback_count,
                 retry_count=run.retry_count,
                 created_at=run.created_at,

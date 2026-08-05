@@ -36,9 +36,9 @@ class Settings:
     cors_origins: tuple[str, ...]
     observability_enabled: bool
     telemetry_service_name: str
-    llm_input_cost_per_million_usd: float
-    llm_output_cost_per_million_usd: float
-    embedding_cost_per_million_usd: float
+    llm_input_cost_per_million_cny: float
+    llm_output_cost_per_million_cny: float
+    embedding_cost_per_million_cny: float
 
 
 @lru_cache
@@ -94,16 +94,16 @@ def get_settings() -> Settings:
             "legal-copilot-agent",
         ).strip()
         or "legal-copilot-agent",
-        llm_input_cost_per_million_usd=max(
+        llm_input_cost_per_million_cny=max(
             0.0,
-            float(os.getenv("LLM_INPUT_COST_PER_1M_USD", "0")),
+            float(os.getenv("LLM_INPUT_COST_PER_1M_CNY", "0")),
         ),
-        llm_output_cost_per_million_usd=max(
+        llm_output_cost_per_million_cny=max(
             0.0,
-            float(os.getenv("LLM_OUTPUT_COST_PER_1M_USD", "0")),
+            float(os.getenv("LLM_OUTPUT_COST_PER_1M_CNY", "0")),
         ),
-        embedding_cost_per_million_usd=max(
+        embedding_cost_per_million_cny=max(
             0.0,
-            float(os.getenv("EMBEDDING_COST_PER_1M_USD", "0")),
+            float(os.getenv("EMBEDDING_COST_PER_1M_CNY", "0")),
         ),
     )

@@ -19,7 +19,7 @@ python -m pip install -r requirements.txt
 python scripts\run_self_test.py
 ```
 
-预期结果：82 项测试全部显示 `ok`，最后输出 `OK`，进程退出码为 0。
+预期结果：84 项测试全部显示 `ok`，最后输出 `OK`，进程退出码为 0。
 
 自动测试覆盖：
 
@@ -320,7 +320,7 @@ mypy app/services app/llm eval
 python scripts\run_self_test.py
 ```
 
-预期：82 项测试通过。脚本会在导入应用前强制 `OFFLINE_MODE=true`、`EMBEDDING_PROVIDER=hash`，删除进程中的 LLM/Embedding Key，并使用测试数据库；控制台不应出现发往真实模型地址的 HTTP 请求。
+预期：84 项测试通过。脚本会在导入应用前强制 `OFFLINE_MODE=true`、`EMBEDDING_PROVIDER=hash`，删除进程中的 LLM/Embedding Key，并使用测试数据库；控制台不应出现发往真实模型地址的 HTTP 请求。
 
 第四周安全用例包括：损坏 PDF、超大文件、MIME 伪装、恶意文件名、重复提交、提示/SQL 注入文本、模型超时、非法 JSON 和 SQLite 锁重试。
 
@@ -357,7 +357,7 @@ python eval\run_eval.py --include-online
 
 推送后打开仓库的 **Actions** 页面。`CI` 工作流包含两个 Job：
 
-1. `backend`：依赖安装、Ruff format、Ruff lint、mypy、82 项测试、离线评测；
+1. `backend`：依赖安装、Ruff format、Ruff lint、mypy、84 项测试、离线评测；
 2. `frontend`：pnpm 锁文件安装、TypeScript 检查和 Vite 构建。
 
 CI 不配置真实模型密钥。两个 Job 均为绿色后，第四周 CI 才算通过。
@@ -643,7 +643,7 @@ cd frontend
 pnpm run build
 ```
 
-该功能完成时为 56 项离线测试；第五周加入追问测试后为 62 项；第六周加入审批测试后为 69 项；第七周加入法规时效测试后为 75 项；第八周加入 Trace、指标和隐私测试后，统一自测入口现为 82 项。前端 TypeScript 检查和 Vite 生产构建通过。自动测试使用 Fake LLM，不读取本机 API Key，也不会产生模型费用。
+该功能完成时为 56 项离线测试；第五周加入追问测试后为 62 项；第六周加入审批测试后为 69 项；第七周加入法规时效测试后为 75 项；第八周加入 Trace、指标和隐私测试后为 82 项；带日期引用报告的两项回归测试加入后，统一自测入口现为 84 项。前端 TypeScript 检查和 Vite 生产构建通过。自动测试使用 Fake LLM，不读取本机 API Key，也不会产生模型费用。
 
 ### 6. 本次真实模型回归结果
 
@@ -790,7 +790,7 @@ cd frontend
 pnpm run build
 ```
 
-第五周完成时的实际结果：62 项离线测试全部通过，Ruff 和 mypy 通过，TypeScript 与 Vite 生产构建通过。升级到第六周后为 69 项，第七周后为 75 项，第八周后统一测试总数为 82 项。
+第五周完成时的实际结果：62 项离线测试全部通过，Ruff 和 mypy 通过，TypeScript 与 Vite 生产构建通过。升级到第六周后为 69 项，第七周后为 75 项，第八周后为 82 项；日期序列化回归修复后统一测试总数为 84 项。
 
 ### 8. 本次浏览器实测记录
 
@@ -822,6 +822,18 @@ pnpm run build
 4. 页面显示“待审批草稿 V1”和人工审批卡片；
 5. 草稿正文、引用和证据缺口可以查看；
 6. 页面不显示 Markdown/PDF 最终下载按钮。
+
+### 1.1 审批意见轮询稳定性
+
+进入人工审批卡片后：
+
+1. 在“审批意见”中输入一段不少于 20 字的内容；
+2. 不点击任何审批按钮，等待至少 4 秒，确保经历两次以上 1.5 秒状态轮询；
+3. 输入内容应完整保留，光标和文本不应被轮询重置；
+4. 切换到其他导航再返回时，只要没有创建新任务或提交审批，同一 React 会话中的意见仍应保留；
+5. 提交审批成功、创建新案件或点击“分析新案件”后，旧意见才应被清空。
+
+2026-08-01 实际浏览器回归：输入“请补充设备逾期交付造成三万元差价损失的证据，并明确解除合同通知到达时间。”，经历至少两轮轮询后内容保持不变，浏览器控制台无 error/warning。验收使用独立临时 SQLite，结束后已停止临时后端并删除数据库与日志。
 
 ### 2. 验证后端无法绕过审批
 
@@ -1049,7 +1061,7 @@ pnpm run build
 5. 搜索接口日期、响应头、版本字段和非法日期；
 6. Agent、引用表、报告快照和 Markdown 的版本持久化。
 
-当前完整结果：82 项自动测试通过，前端 TypeScript 与 Vite 生产构建通过，Ruff、mypy 和 OpenAPI 校验通过。
+当前完整结果：84 项自动测试通过，前端 TypeScript 与 Vite 生产构建通过，Ruff、mypy 和 OpenAPI 校验通过。
 
 ### 6. 2026-07-31 浏览器端到端实测
 
@@ -1102,7 +1114,7 @@ pnpm run build
 6. Chat 优先使用服务商响应中的真实 usage；
 7. 无 Trace ID 的历史任务访问监控接口返回明确 404。
 
-完整自测预期为 82 项通过。自动测试固定使用离线模式或 Fake Provider，不调用真实 Chat/Embedding，也不会产生费用。
+完整自测预期为 84 项通过。自动测试固定使用离线模式或 Fake Provider，不调用真实 Chat/Embedding，也不会产生费用。
 
 ### 2. Apifox / Swagger 接口验收
 
@@ -1121,7 +1133,7 @@ mode=offline
 - HTTP 202；
 - 响应头 `X-Trace-ID` 与响应体 `trace_id` 相同；
 - `monitoring_url=/api/v1/runs/{run_id}/monitoring`；
-- 状态接口返回 `total_duration_ms`、`input_tokens`、`output_tokens`、`estimated_cost_usd` 和 `fallback_count`。
+- 状态接口返回 `total_duration_ms`、`input_tokens`、`output_tokens`、`estimated_cost_cny` 和 `fallback_count`。
 
 查询单次链路：
 
@@ -1141,12 +1153,12 @@ GET /api/v1/monitoring/overview?days=7
 
 ### 3. 费用配置验收
 
-`.env` 中单价单位均为“美元 / 一百万 Token”：
+`.env` 中单价单位均为“人民币 / 一百万 Token”：
 
 ```env
-LLM_INPUT_COST_PER_1M_USD=0
-LLM_OUTPUT_COST_PER_1M_USD=0
-EMBEDDING_COST_PER_1M_USD=0
+LLM_INPUT_COST_PER_1M_CNY=0
+LLM_OUTPUT_COST_PER_1M_CNY=0
+EMBEDDING_COST_PER_1M_CNY=0
 ```
 
 默认 0 只统计 Token，不估算费用。填写服务商实际单价并重启后端后，新运行会按调用时用量计算；历史运行不会被自动改价。不同模型价格不同，不要把示例数字当成真实报价。
@@ -1177,7 +1189,7 @@ EMBEDDING_COST_PER_1M_USD=0
 1. 首页成功连接 37 条教学法规；
 2. 提交事实完整的合同问题后，任务进入 `waiting_for_approval`；
 3. 执行区显示 RUN #1、离线规则引擎、法规适用时点和 Trace 快捷链接；
-4. 监控概览显示 1 次运行、成功率 100%、降级率 0%、平均/P95 111 ms、Token 0、费用 `$0.000000`；
+4. 监控概览显示 1 次运行、成功率 100%、降级率 0%、平均/P95 111 ms、Token 0、费用 `¥0.000000`；
 5. 节点指标展示案件抽取、法规检索、引用审核和报告生成的平均/P95；
 6. 单次 Trace 显示 32 位 Trace ID、最慢节点“法规混合检索”、`offline-template` 模型标识和 0 次降级/重试；
 7. Span 瀑布包含 ROOT、NODE 与 EMBED，Embedding 明确显示 `hash / chinese-bigram-sha256-v1`；

@@ -95,7 +95,7 @@ def sanitize_span_attributes(attributes: dict[str, Any] | None) -> dict[str, Any
     return safe
 
 
-def estimate_cost_usd(
+def estimate_cost_cny(
     *,
     input_tokens: int = 0,
     output_tokens: int = 0,
@@ -103,11 +103,11 @@ def estimate_cost_usd(
 ) -> float:
     settings = get_settings()
     if operation == "embedding":
-        cost = input_tokens * settings.embedding_cost_per_million_usd / 1_000_000
+        cost = input_tokens * settings.embedding_cost_per_million_cny / 1_000_000
     else:
         cost = (
-            input_tokens * settings.llm_input_cost_per_million_usd
-            + output_tokens * settings.llm_output_cost_per_million_usd
+            input_tokens * settings.llm_input_cost_per_million_cny
+            + output_tokens * settings.llm_output_cost_per_million_cny
         ) / 1_000_000
     return round(cost, 8)
 
@@ -197,7 +197,7 @@ class SpanObservation:
             "model": model,
             "input_tokens": max(0, input_tokens),
             "output_tokens": max(0, output_tokens),
-            "estimated_cost_usd": estimate_cost_usd(
+            "estimated_cost_cny": estimate_cost_cny(
                 input_tokens=max(0, input_tokens),
                 output_tokens=max(0, output_tokens),
                 operation=operation,
